@@ -1,17 +1,78 @@
-# =============================================================================
-# DEPRECATION WARNING:
-#
-# The file `requirements.txt` does not influence the package dependencies and
-# will not be automatically created in the next version of PyScaffold (v4.x).
-#
-# Please have look at the docs for better alternatives
-# (`Dependency Management` section).
-# =============================================================================
-#
-# Add your pinned requirements so that they can be easily installed with:
-# pip install -r requirements.txt
-# Remember to also add them in setup.cfg but unpinned.
-# Example:
-# numpy==1.13.3
-# scipy==1.0
-#
+alabaster==0.7.12
+asn1crypto==0.24.0
+atomicwrites==1.3.0
+attrs==19.3.0
+azure-common==1.1.24
+azure-nspkg==3.0.2
+azure-storage-blob==2.1.0
+azure-storage-common==2.1.0
+Babel==2.8.0
+bleach==3.1.4
+boto3==1.9.234
+botocore==1.12.234
+certifi==2020.4.5.1
+cffi==1.14.0
+chardet==3.0.4
+cmarkgfm==0.4.2
+colorama==0.4.3
+commonmark==0.9.1
+cryptography==2.8
+docutils==0.15.2
+entrypoints==0.3
+future==0.18.2
+idna==2.9
+ijson==3.0
+imagesize==1.2.0
+importlib-metadata==1.5.0
+Jinja2==2.11.2
+jmespath==0.9.4
+keyring==21.1.1
+MarkupSafe==1.1.1
+mkl-fft==1.0.15
+mkl-random==1.1.0
+mkl-service==2.3.0
+more-itertools==8.2.0
+numpy==1.18.1
+packaging==20.3
+pandas==1.0.3
+pkginfo==1.5.0.1
+pluggy==0.13.1
+py==1.8.1
+pyarrow==0.15.1
+pycparser==2.20
+pycryptodomex==3.9.4
+Pygments==2.6.1
+PyJWT==1.7.1
+pyOpenSSL==19.1.0
+pyparsing==2.4.7
+PyScaffold==3.2.3
+pyscaffoldext-markdown==0.3.2
+PySocks==1.7.1
+pytest==5.4.1
+python-dateutil==2.8.1
+pytz==2020.1
+pywin32-ctypes==0.2.0
+readme-renderer==24.0
+recommonmark==0.6.0
+requests==2.23.0
+requests-toolbelt==0.9.1
+s3transfer==0.2.1
+six==1.14.0
+snowballstemmer==2.0.0
+snowflake-connector-python==2.0.1
+-e git+git@github.com:GEM7318/Snowmobile.git@a008359a5d14f016cbef803f649a2b3979a50db1#egg=snowmobile
+Sphinx==3.0.3
+sphinxcontrib-applehelp==1.0.2
+sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-htmlhelp==1.0.3
+sphinxcontrib-jsmath==1.0.1
+sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-serializinghtml==1.1.4
+tqdm==4.45.0
+twine==2.0.0
+urllib3==1.25.8
+wcwidth==0.1.9
+webencodings==0.5.1
+win-inet-pton==1.1.0
+wincertstore==0.2
+zipp==3.1.0

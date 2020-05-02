@@ -3,15 +3,17 @@
 `snowmobile` is a set of modules for streamlined querying, data-loading, and overall interaction with the Snowflake Database - a brief overview of each is outlined below.
 
 
+
+
 <h3>snowquery</h3>
+
 `snowquery` streamlines the authorization & execution of statements against the database via `execute_query()`, which:
+
 - Establishes a connection to the Database, defaulting to remain on the same session unless force-disconnected via `snowquery.disconnect()`
 - Defaults to return queried results in a [pandas](https://pandas.pydata.org/) DataFrame
 - Includes parameter-based support for multiple sets of credentials stored in a local *snowflake_credentials.json* file
     - The locating & parsing of the credentials file is extracted into its own `snowcreds` sub-module for easier
         adaptation to security standards without needing to interact with the rest of `snowmobile`'s core functionality
-
-
 
 
 <h3>snowloader</h3>
