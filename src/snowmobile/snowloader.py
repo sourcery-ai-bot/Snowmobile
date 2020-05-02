@@ -1,5 +1,5 @@
 
-
+# Imports
 import snowquery as sf
 import pandas as pd
 import string
@@ -12,10 +12,15 @@ import datetime
 def standardize_col(col: str) -> str:
     """Standardize a column for Snowflake table.
     (1) Replaces spaces with underscores, trims leading & trailing
-    underscores, forces upper-case
+        underscores, forces upper-case
     (2) Replaces special characters with underscores
     (3) Reduces repeated special characters
-    col; string representation of a column name
+
+    Args:
+        col: A single string value of a column name
+    Returns:
+        col: A string that has been re-formatted/standardized for Snowflake
+                standards
     """
     col = ((col.replace(' ', '_')).strip('_')).upper()  # 1
 
@@ -42,8 +47,13 @@ def standardize_col(col: str) -> str:
 
 
 def rename_cols_for_snowflake(df: pd.DataFrame) -> pd.DataFrame:
-    """Renaming dataframe columns for Snowflake table.
-    df; pd.DataFrame to be pushed to Snowflake
+    """Renaming DataFrame columns for Snowflake table.
+
+    Args:
+        df: pd.DataFrame to be pushed to Snowflake
+    Returns:
+        df: pd.DataFrame with re-formatted column names and a
+            'loaded_tmstmp' field added on the far right side
     """
     df['LOADED_TMSTMP'] = datetime.datetime.now()
     old_cols = list(df.columns)
@@ -55,8 +65,14 @@ def rename_cols_for_snowflake(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_ddl(df: pd.DataFrame, table_name: str) -> str:
     """Converting mysql DDL to Snowflake DDL.
-    df; pd.DataFrame to push to Snowflake
-    table_name; string representation of table name to load the df into
+
+    Args:
+        df: pd.DataFrame to push to Snowflake.
+        table_name: Name of table to load the DataFrame into.
+    Returns:
+        str: DDL to be executed to create table structure to load DataFrame
+            into (for force-recreation of a table or loading into a table that
+            doesn't previously exist)
     """
     final_ddl = \
         pd.io.sql.get_schema(df, table_name).replace('CREATE TABLE',
@@ -65,8 +81,14 @@ def get_ddl(df: pd.DataFrame, table_name: str) -> str:
 
 
 def check_information_schema(table_name: str) -> list:
-    """Checks information schema for existence of table/returns columns if so.
-    table_name; string representation of table name to load the df into
+    """Checks information schema for existence of table & returns columns
+    for comparison to local DataFrame if so
+
+    Args:
+        table_name: Name of table to load the df into
+    Returns:
+        table_cols: Columns of the table within database or an empty list if
+            not
     """
 
     sql = f"""SELECT
@@ -90,11 +112,14 @@ def check_information_schema(table_name: str) -> list:
 
 
 def compare_fields(df_cols: list, table_cols: list) -> int:
-    """Counts number of matches between columns of df & columns of Snowflake
-    table.
-    Will return 0 if the table doesn't exists
-    df_cols; list(df.columns)
-    table_cols; list returned by check_information_schema() function
+    """Returns match-count of column names in DataFrame compared to the table
+
+    Args:
+        df_cols: Columns of the DataFrame to load
+        table_cols: Columns of the table the DataFrame is being loaded into
+    Returns:
+        matched_cnt: Count of matches between the table and the DataFrame's
+            columns - will return a zero if the table does not exist at all
     """
     matched_list = []
     for i, (df_col, tbl_col) in enumerate(zip(df_cols, table_cols), start=1):
@@ -112,8 +137,14 @@ def compare_fields(df_cols: list, table_cols: list) -> int:
 
 def validate_table(df: pd.DataFrame, table_name: str) -> tuple:
     """Analyzes count of matching columns to count of cols in df to load.
-    df; pd.DataFrame to load into Snowflake
-    table_name; name of table (str) to load df into
+
+    Args:
+        df: pd.DataFrame to load into Snowflake
+        table_name: name of table (str) to load df into
+    Returns:
+        outcome: Tuple of boolean values indicating all possible
+            combinations of a table existing (Y/N) and the columns of the
+            table matching those in the DataFrame
     """
     table_cols = check_information_schema(table_name)
 
@@ -135,12 +166,21 @@ def validate_table(df: pd.DataFrame, table_name: str) -> tuple:
 
 def verify_load(df: pd.DataFrame, table_name: str,
                 force_recreate: bool = False) -> bool:
-    """Renames dataframe's columns, validates against table, recreates if
-    needed.
-    df; pd.DataFrame to push to Snowflake
-    table_name; string representation of table name to load the df into
-    force_recreate; boolean value to indicating whether or not to
-    force-recreation of table
+    """Performs pre-loading operations and checks to table in-warehouse
+    # (1) Performs comparison of local DataFrame to in-warehouse table and
+            creates/recreate the table if needed
+    # (2) Will not automatically recreate a table if it already exists but
+    #       cannot append the contents of the DataFrame without modification
+
+    Args:
+        df: pd.DataFrame to push to Snowflake
+        table_name: string representation of table name to load the df into
+        force_recreate: boolean value to indicating whether or not to
+            force-recreation of table
+    Returns:
+        continue_load: Boolean value indicating whether or not the
+            loading process will occur successfully if continued based on the
+            local to in-warehouse comparison
     """
     print(f"<validating load into {table_name}>")
 
@@ -197,9 +237,13 @@ def verify_load(df: pd.DataFrame, table_name: str,
 
 def remove_local(file_path: str, keep_local: bool = False) -> None:
     """Removes local copy of exported file post-loading
-    file_path; path to write local file to
-    keep_local; boolean value indicating whether or not to delete file
-    post-load
+
+    Args:
+        file_path: path to write local file to
+        keep_local: boolean value indicating whether or not to delete local
+            file post-load
+    Returns:
+        None
     """
     if keep_local is False:
         os.remove(file_path)
@@ -216,10 +260,52 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
                     file_format: str = 'csv_gem7318') -> object:
-    """Prepares dataframe for load, checks Snowflake for table existence,
-    creates table
-    if doesn't exist or invalid, appends data if not, recreates if prompted
-    to do so, deletes local copy of file by default
+    """Combines the above functions to flexibly & safely load a
+    DataFrame into a Snowflake table.
+
+    # (1) Prepares DataFrame for load by standardizing column names
+    #       and adding a 'LOADED_TMSTMP' field to the far right side
+    # (2) Checks for existence of the table in Snowflake and compares
+    #       structure of in-warehouse table to that of local DataFrame
+    # (3) Defaults to creating the table if it doesn't exist, appending to the
+    #       table if it exists with matching field names/data types and will
+    #       forgo loading the data/return a boolean value of False if
+    #       otherwise; this can be over-ridden by passing `force_recreate=True`
+    #       when the function is called
+    # (4) Deletes local file written out to load into a staging table
+    # (5) Deletes the staging table after load is completed successfully
+
+    Args:
+        df: DataFrame to load to Snowflake
+        table_name: Table name to load the data into
+        force_recreate: Boolean value indicating whether or not to recreate
+            the table irrelevant of matching structure between local and DB
+        keep_local: Boolean value indicating whether or not to keep the
+            local .csv that is written out in the process
+        output_location: Location to write out local .csv to; defaults to
+            current working directory
+        on_error: Query parameter for how to handle loading errors
+        file_format: User-defined file_format within Snowflake
+    Returns:
+        continue_load: Boolean value indicating whether or not load was
+            successful - can be particularly useful when iterating through
+            multiple files and appending to the same table and is intended
+            for use similar to the following, wherein all files that match the
+            structure of the table's DDL are loaded/appended and those that
+            do not are returned in a dictionary containing the file's name
+            and the columns of the DataFrame that failed to load;
+
+            ```python
+            problem_files = {}
+            for file_name, df in dict_of_dfs.items():
+
+                loaded = df_to_snowflake(df, name_of_table)
+
+                if not loaded:
+                    problem_files[file_name] = df.columns
+
+            print(f"files_to_qa:\n\t{list(problem_files.keys()}")
+            ```
     """
     continue_load = verify_load(df, table_name, force_recreate=force_recreate)
 
@@ -288,52 +374,3 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         pass
 
     return continue_load
-
-# TODO: Add a return value on the try/except such that a user can build
-#  conditionals based on successful or unsuccessful load
-
-# TODO: Build in functionality where user can specify that they don't want the
-#   table to be recreated on column mismatch
-
-# TODO: Fix bug where a call to df_to_snowflake() pushes dataframe to Snowflake
-#   but deletes a column in the local version of the dataframe
-
-# TODO: Run testing on if script fails or not depending on whether or not
-#  the directory where your python script is set to the working directory
-#  within it
-
-# df = pd.read_excel(r'C:\Users\GEM7318\Yum! Brands, Inc\PH US BA Team - '
-#                    r'Infosync Report Downloads\_2020\PACPizza LLC\YUM KPI Extract_28841_200421_033702.xlsx')
-# df['fz_group'] = 'PACPizza'
-
-# validate_table()
-# validate_table(df, 'INFOSYNC_RAW_TEST2')
-# check_information_schema('INFOSYNC_RAW_TEST2')
-
-# verify_load(df, 'INFOSYNC_RAW_TEST2')
-
-# load = df_to_snowflake(df, 'INFOSYNC_RAW_TEST2')
-# if load:
-#     print(1)
-# else:
-#     print(0)
-# try:
-
-# except:
-#     print(1)
-
-# # Example
-
-# df = pd.read_excel(
-#     r'C:\Users\GEM7318\Documents\Github\COVID-Analytics\_xlsx\GEM_Shelter_in_place_DMAs.xlsx')
-# df.head()
-
-# df2 = pd.read_csv(
-#     r'\\Dalgem7318b\D\Grant Murray\TTD Ad Hocs\10-16-2019 Bain Marketing '
-#     r'Acceleration\DOOH Stores Fixed.csv')
-# df2.head()
-
-# df_to_snowflake(df, 'GEM_SHELTER_IN_PLACE_DMAS', force_recreate=True)
-# df_to_snowflake(df2, 'GEM_DOOH_STORE_DESC', force_recreate=True)
-
-# pd.io.sql.get_schema(df, 'TEST_TABLE')

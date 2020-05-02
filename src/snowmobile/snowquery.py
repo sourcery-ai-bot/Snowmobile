@@ -8,8 +8,16 @@ import os
 class Snowflake:
     """Primary Connection and Query Execution Class"""
 
-    def __init__(self, config_file='snowflake_config.json', connection=''):
+    def __init__(self, config_file: str = 'snowflake_config.json',
+                 connection: str = '') -> None:
+        """
 
+        Args:
+            config_file: Name of .json configuration file following the
+            format of connection_credentials_SAMPLE.json.
+            connection: Name of connection within json file to use - it will
+            use first set of credentials in the file if no argument is passed.
+        """
         self.config_file = config_file
         self.connection = connection
 
@@ -47,18 +55,23 @@ class Snowflake:
             schema=self.cfg["schema"]
         )
 
-    def execute_query(self, query, from_file=False):
+    def execute_query(self, query: str, from_file: bool = False) \
+            -> pd.DataFrame:
         """Run commands in Snowflake.
+
+        Args:
+            query: Raw SQL to execute.
+            from_file: Boolean value indicating whether or not to read the
+            query from a local file.
         """
 
-        def read_query(filepath):
+        def read_query(filepath: str) -> object:
             """Fetch query text.
-            Input:
-            -------------------------
-            file_name:  (str) File name, including suffix. Must be
-                located in queries folder.
-            Output:
-            -------------------------
+
+            Args:
+                filepath:  Full file path to sql file - must be located
+                in queries folder.
+
             query_text: (str) Snowflake query string.
             """
 
@@ -66,8 +79,10 @@ class Snowflake:
                 query_text = open(filepath).read()
                 return query_text
             except:
+                query_text = None
                 print("There was an error reading the file.")
-                return None
+
+            return query_text
 
         if from_file:
             try:
@@ -77,12 +92,14 @@ class Snowflake:
 
         try:
             results = pd.read_sql(query, self.con)
-            return results
 
         except sf.errors.ProgrammingError as e:
-            # default error message
-            print(e)
-            # customer error message
-            print(f'Error {e.errno} ({e.sqlstate}): {e.msg} ({e.sfqid})')
 
-        return None
+            results = None
+
+            print(e)  # default error message
+
+            print(f'Error {e.errno} ({e.sqlstate}): '
+                  f'{e.msg} ({e.sfqid})')  # custom error message
+
+        return results
