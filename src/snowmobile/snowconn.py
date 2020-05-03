@@ -1,9 +1,7 @@
 
 # Imports
 import snowflake.connector as sf
-from snowmobile.snowcreds import snowcreds as creds
-
-# creds = snowcreds.Credentials()
+from snowmobile import snowcreds as creds
 
 
 class Connection(creds.Credentials):

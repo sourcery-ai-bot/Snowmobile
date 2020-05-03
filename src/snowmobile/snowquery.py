@@ -1,6 +1,6 @@
 import snowflake.connector as sf
 import pandas as pd
-from snowmobile.snowconn import snowconn
+from snowmobile import snowconn
 
 
 class Snowflake(snowconn.Connection):
@@ -47,3 +47,7 @@ class Snowflake(snowconn.Connection):
             results = None
 
         return results
+
+    def disconnect(self):
+        self.conn.close()
+        return None

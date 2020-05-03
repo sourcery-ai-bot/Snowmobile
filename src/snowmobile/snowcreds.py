@@ -20,7 +20,7 @@ class Credentials:
         self.conn_name = conn_name
 
     def get(self):
-        print(f"<searching for {self.config_file} in local file system..>")
+        print(f"Searching for {self.config_file} in local file system..\n")
         for dirpath, dirnames, files in os.walk(os.path.expanduser('~'),
                                                 topdown=False):
             if self.config_file in files:
@@ -35,7 +35,7 @@ class Credentials:
         else:
             with open(path_to_config) as c:
                 all_creds = json.load(c)
-            print(f"Located & loaded {self.config_file} at:\n\t"
+            print(f"Located & loaded {self.config_file} from:\n\t"
                   f"{path_to_config}")
 
         if not self.conn_name:

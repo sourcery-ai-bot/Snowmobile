@@ -1,13 +1,11 @@
 # Imports
-from snowmobile.snowquery import snowquery
+from snowmobile import snowquery
 import pandas as pd
 import string
 import os
 import itertools
 import csv
 import datetime
-
-# snowflake = snowquery.Snowflake()
 
 
 def standardize_col(col: str) -> str:
@@ -100,10 +98,7 @@ def check_information_schema(table_name: str,
             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}'
             ORDER BY 1 ASC"""
 
-    # snowflake = sf.Snowflake()
-    # snowflake.connect()
     validation_df = snowflake.execute_query(sql)
-    # snowflake.disconnect()
 
     try:
         table_cols = list(validation_df['COLUMN_NAME'])
@@ -188,9 +183,6 @@ def verify_load(snowflake: snowquery.Snowflake,
             local to in-warehouse comparison
     """
     print(f"<validating load into {table_name}>")
-
-    # snowflake = sf.Snowflake()
-    # snowflake.connect()
 
     df = rename_cols_for_snowflake(df)
 
