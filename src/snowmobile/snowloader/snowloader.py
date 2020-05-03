@@ -1,12 +1,13 @@
-
 # Imports
-import snowquery as sf
+from snowmobile.snowquery import snowquery
 import pandas as pd
 import string
 import os
 import itertools
 import csv
 import datetime
+
+# snowflake = snowquery.Snowflake()
 
 
 def standardize_col(col: str) -> str:
@@ -80,12 +81,14 @@ def get_ddl(df: pd.DataFrame, table_name: str) -> str:
     return final_ddl
 
 
-def check_information_schema(table_name: str) -> list:
+def check_information_schema(table_name: str,
+                             snowflake: snowquery.Snowflake) -> list:
     """Checks information schema for existence of table & returns columns
     for comparison to local DataFrame if so
 
     Args:
         table_name: Name of table to load the df into
+        snowflake: snowquery.Snowflake object to execute statement with
     Returns:
         table_cols: Columns of the table within database or an empty list if
             not
@@ -97,10 +100,10 @@ def check_information_schema(table_name: str) -> list:
             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}'
             ORDER BY 1 ASC"""
 
-    snowflake = sf.Snowflake()
-    snowflake.connect()
-    validation_df = snowflake.execute_query(sql, return_results=True)
-    snowflake.disconnect()
+    # snowflake = sf.Snowflake()
+    # snowflake.connect()
+    validation_df = snowflake.execute_query(sql)
+    # snowflake.disconnect()
 
     try:
         table_cols = list(validation_df['COLUMN_NAME'])
@@ -135,7 +138,8 @@ def compare_fields(df_cols: list, table_cols: list) -> int:
     return matched_cnt
 
 
-def validate_table(df: pd.DataFrame, table_name: str) -> tuple:
+def validate_table(df: pd.DataFrame, table_name: str,
+                   snowflake: snowquery.Snowflake) -> tuple:
     """Analyzes count of matching columns to count of cols in df to load.
 
     Args:
@@ -146,7 +150,7 @@ def validate_table(df: pd.DataFrame, table_name: str) -> tuple:
             combinations of a table existing (Y/N) and the columns of the
             table matching those in the DataFrame
     """
-    table_cols = check_information_schema(table_name)
+    table_cols = check_information_schema(table_name, snowflake)
 
     df_cols = list(df.columns)
 
@@ -164,8 +168,9 @@ def validate_table(df: pd.DataFrame, table_name: str) -> tuple:
     return outcome
 
 
-def verify_load(df: pd.DataFrame, table_name: str,
-                force_recreate: bool = False) -> bool:
+def verify_load(snowflake: snowquery.Snowflake,
+                df: pd.DataFrame, table_name: str, force_recreate: bool =
+                False) -> bool:
     """Performs pre-loading operations and checks to table in-warehouse
     # (1) Performs comparison of local DataFrame to in-warehouse table and
             creates/recreate the table if needed
@@ -184,12 +189,14 @@ def verify_load(df: pd.DataFrame, table_name: str,
     """
     print(f"<validating load into {table_name}>")
 
-    snowflake = sf.Snowflake()
-    snowflake.connect()
+    # snowflake = sf.Snowflake()
+    # snowflake.connect()
 
     df = rename_cols_for_snowflake(df)
 
-    table_exists, fields_match = validate_table(df, table_name)
+    table_exists, fields_match = validate_table(df, table_name,
+                                                snowflake=snowflake)
+
     table_ddl = get_ddl(df, table_name)
 
     if not table_exists:
@@ -230,7 +237,7 @@ def verify_load(df: pd.DataFrame, table_name: str,
             f"\n\t- Please Check SnowLoader Source Codes")
         continue_load = False
 
-    snowflake.disconnect()
+    # snowflake.disconnect()
 
     return continue_load
 
@@ -256,6 +263,7 @@ def remove_local(file_path: str, keep_local: bool = False) -> None:
 
 
 def df_to_snowflake(df: pd.DataFrame, table_name: str,
+                    snowflake: snowquery.Snowflake = '', conn_name: str = '',
                     force_recreate: bool = False, keep_local: bool = False,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
@@ -307,7 +315,12 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
             print(f"files_to_qa:\n\t{list(problem_files.keys()}")
             ```
     """
-    continue_load = verify_load(df, table_name, force_recreate=force_recreate)
+    if not snowflake:
+        snowflake = snowquery.Snowflake(conn_name=conn_name)
+
+    continue_load = verify_load(snowflake=snowflake, df=df,
+                                table_name=table_name,
+                                force_recreate=force_recreate)
 
     if continue_load:
 
@@ -317,8 +330,9 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         df.to_csv(file_path, index=False, sep='|', header=False, quotechar='"',
                   quoting=csv.QUOTE_ALL)  # Exporting csv
 
-        create_stage = f"create or replace stage {table_name}_stage file_format " \
-                       f"= {file_format};"
+        create_stage = \
+            f"create or replace stage {table_name}_stage file_format " \
+            f"= {file_format};"
 
         put_path = file_path.replace('\\',
                                      '\\\\')  # Escaped path for put statement
@@ -334,14 +348,13 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
         statements = [create_stage, put_file, copy_into, drop_stage]
 
-        snowflake = sf.Snowflake()
-        snowflake.connect()
+        # snowflake = sf.Snowflake()
+        # snowflake.connect()
 
         for i, statement in enumerate(statements, start=1):
 
             try:
-                result = snowflake.execute_query(statement,
-                                                 return_results=True)
+                result = snowflake.execute_query(statement)
 
                 print(
                     f"\n<{i} of {len(statements)} completed>:\n\t"
@@ -362,14 +375,11 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
         remove_local(file_path, keep_local)  # Defaults to delete local file
 
-        snowflake.disconnect()  # Disconnecting from Snowflake
-
     else:
         pass
 
     if list(df.columns)[-1:] == ['LOADED_TMSTMP']:
         df.drop(columns=list(df.columns)[-1:], axis=1, inplace=True)
-
     else:
         pass
 
