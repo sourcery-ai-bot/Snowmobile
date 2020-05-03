@@ -193,43 +193,42 @@ def verify_load(snowflake: snowquery.Snowflake,
 
     if not table_exists:
         print(
-            f"\tTable: {table_name} Created in Absence of Pre-Existing "
-            f"Table\n")
+            f"\tTable: {table_name} created in absence of pre-existing "
+            f"table\n")
         continue_load = True
         snowflake.execute_query(table_ddl)
 
     elif table_exists and fields_match and not force_recreate:
         print(
-            f"\tTable: {table_name} Already Exists w/ Matching Field Names\n")
+            f"\tTable: {table_name} already exists w/ matching field names\n"
+            f"- continuing load and will append data to table\n")
         continue_load = True
 
     elif table_exists and fields_match and force_recreate:
         print(
-            f"\tTable: {table_name} Already Exists w/ Matching Field Names "
-            f"- Force-Recreated by User\n")
+            f"\tTable: {table_name} Already exists w/ matching field names "
+            f"- Recreated by user w/ force_recreate=True\n")
         continue_load = True
         snowflake.execute_query(table_ddl)
 
     elif table_exists and not fields_match and not force_recreate:
         print(
-            f"\tColumns in {table_name} Don't Match Those in Local DataFrame"
-            f"\n\t- Use `force_recreate=True` to Overwrite Existing Table\n")
+            f"\tColumns in {table_name} don't match those in local DataFrame"
+            f"\n\t- Use `force_recreate=True` to overwrite existing table\n")
         continue_load = False
 
     elif table_exists and not fields_match and force_recreate:
         print(
-            f"\tTable: {table_name} Columns Don't Match Those in Local "
-            f"DataFrame - Force-Recreated by User\n")
+            f"\tTable: {table_name} columns don't match those in local "
+            f"DataFrame \n- Force-recreated by user\n")
         continue_load = True
         snowflake.execute_query(table_ddl)
 
     else:
         print(
-            f"\tUnknown Error Occured w/ Load of {table_name} to Snowflake "
-            f"\n\t- Please Check SnowLoader Source Codes")
+            f"\tUnknown error occured w/ load of {table_name} to Snowflake "
+            f"\n\t- please check snowmobile.snowloader source codes")
         continue_load = False
-
-    # snowflake.disconnect()
 
     return continue_load
 
