@@ -6,7 +6,7 @@ from snowmobile import snowcreds as creds
 
 class Connection(creds.Credentials):
 
-    def __init__(self, config_file: str = 'snowflake_config.json',
+    def __init__(self, config_file: str = 'snowflake_credentials.json',
                  conn_name: str = ''):
         super().__init__()
 

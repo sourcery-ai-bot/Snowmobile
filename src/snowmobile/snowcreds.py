@@ -6,7 +6,7 @@ import json
 
 class Credentials:
 
-    def __init__(self, config_file: str = 'snowflake_config.json',
+    def __init__(self, config_file: str = 'snowflake_credentials.json',
                  conn_name: str = '') -> None:
         """
 

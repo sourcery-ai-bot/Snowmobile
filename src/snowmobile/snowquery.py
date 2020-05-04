@@ -6,7 +6,7 @@ from snowmobile import snowconn
 class Snowflake(snowconn.Connection):
     """Primary Connection and Query Execution Class"""
 
-    def __init__(self, config_file: str = 'snowflake_config.json',
+    def __init__(self, config_file: str = 'snowflake_credentials.json',
                  conn_name: str = '') -> None:
         super().__init__(config_file, conn_name)
 
