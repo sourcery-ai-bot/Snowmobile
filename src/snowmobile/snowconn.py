@@ -3,7 +3,6 @@
 import snowflake.connector as sf
 from snowmobile import snowcreds as creds
 
-
 class Connection(creds.Credentials):
 
     def __init__(self, config_file: str = 'snowflake_credentials.json',
@@ -21,7 +20,7 @@ class Connection(creds.Credentials):
         self.config_file = config_file
         self.conn_name = conn_name
 
-    def get_conn(self) -> snowflake.connector.conn:
+    def get_conn(self) -> sf.connector.conn:
         """Uses credentials to authenticate for statement
         execution.
 
