@@ -80,8 +80,7 @@ sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
 
 from snowmobile import snowloader
 floated_sample = sample_table.applymap(float)
-snowloader.df_to_snowflake(df=floated_sample, table_name='SAMPLE_TABLE',
-                             force_recreate=True)
+snowloader.df_to_snowflake(df=floated_sample, table_name='SAMPLE_TABLE', force_recreate=True)
 ``` 
   
 
