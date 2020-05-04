@@ -8,18 +8,23 @@ class Credentials:
 
     def __init__(self, config_file: str = 'snowflake_credentials.json',
                  conn_name: str = '') -> None:
-        """
+        """Instantiates instances of the needed params to locate creds file.
 
         Args:
             config_file: Name of .json configuration file following the
-            format of connection_credentials_SAMPLE.json.
+                format of connection_credentials_SAMPLE.json.
             conn_name: Name of connection within json file to use - it will
-            use first set of credentials in the file if no argument is passed.
+                use first set of credentials in the file if no argument is passed.
         """
         self.config_file = config_file
         self.conn_name = conn_name
 
-    def get(self):
+    def get(self) -> dict:
+        """Locates creds file and parses out the specified set of credentials.
+
+        Returns:
+            Dictionary containing a specific set of Snowflake credentials
+        """
         print(f"Searching for {self.config_file} in local file system..\n")
         for dirpath, dirnames, files in os.walk(os.path.expanduser('~'),
                                                 topdown=False):

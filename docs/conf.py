@@ -15,11 +15,21 @@ import shutil
 
 __location__ = os.path.join(os.getcwd(), os.path.dirname(
     inspect.getfile(inspect.currentframe())))
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.join(__location__, '../src'))
+# sys.path.insert(0, os.path.join(__location__, '../src'))
+
+# GEM added args---------------------------------------------------------------
+path_to_docs = os.getcwd()
+module_dir = os.path.join(os.getcwd().split('docs')[0], 'src',
+                              'snowmobile')
+sys.path.insert(0, module_dir)
+# print(f'The path to module is:\n\t{module_dir}\n')
+# print('\t', os.path.join(__location__, 'src', 'snowmobile'), '\n')
+# print(f"The current directory is:\n\t{os.getcwd()}")
+
+# -------------------------------------------------------------/GEM added args/
 
 # -- Run sphinx-apidoc ------------------------------------------------------
 # This hack is necessary since RTD does not issue `sphinx-apidoc` before running
@@ -28,14 +38,13 @@ sys.path.insert(0, os.path.join(__location__, '../src'))
 # DON'T FORGET: Check the box "Install your project inside a virtualenv using
 # setup.py install" in the RTD Advanced Settings.
 # Additionally it helps us to avoid running apidoc manually
-
 try:  # for Sphinx >= 1.7
     from sphinx.ext import apidoc
 except ImportError:
     from sphinx import apidoc
-
-output_dir = os.path.join(__location__, "api")
-module_dir = os.path.join(__location__, "../src/cusersgem7318documentsgithubsnowmobile")
+print(f"__location__ is {__location__}")
+output_dir = os.path.join(__location__, "build", "sphinx", "doctrees", "api")
+# module_dir = os.path.join(__location__, "src", "snowmobile")
 try:
     shutil.rmtree(output_dir)
 except FileNotFoundError:
@@ -69,7 +78,27 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
               'sphinx.ext.napoleon']
 extensions.append('recommonmark')
 
-# Add any paths that contain templates here, relative to this directory.
+# Add any Sphinx extension module names here, as strings
+extensions = ['sphinxcontrib.napoleon']
+
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = True
+napoleon_include_private_with_doc = True
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = False
+napoleon_use_rtype = True
+napoleon_use_keyword = True
+napoleon_custom_sections = 'Attributes'
+
+
+# Add
+# any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 

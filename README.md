@@ -35,7 +35,7 @@ as desired and store anywhere on local file system
         "schema": "SANDBOX"
       }
     }
-    ```
+   ```
    
 3. Import desired modules and execute a statement to test connection
     ```python
@@ -129,11 +129,7 @@ snowloader.df_to_snowflake(df=floated_sample, table_name='SAMPLE_TABLE', force_r
 
 In the above,
 - *Option 1* will load the data back into Snowflake on the same connection that was established in the
-  
-    ```python
-    sf = snowquery.Snowflake(conn_name='SANDBOX')
-    ``` 
-  statement by use of the `snowflake=sf` parameter
+  `sf = snowquery.Snowflake(conn_name='SANDBOX')` statement by use of the `snowflake=sf` parameter
 - In *Option 2* this argument is omitted and the function will instantiate a new connection based on the first set of credentials in **snowflake_credentials.json**
 
 

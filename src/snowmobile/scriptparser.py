@@ -5,17 +5,17 @@ import sqlparse
 class ParseScript:
     """
     Active-parsing of SQL script in Python for seamless development loop.
-    # Enables flexible parsing of a SQL script into individual statements or
-    # spans of statements based on statement headers declared in SQL script.
-    # These should be denoted by placing headers above the statements within
-    # within the SQL file as shown below:
-    #
-    #  /*-statement_header-*/
-    #  CREATE OR REPLACE TABLE...
-    #
+
+    Enables flexible parsing of a SQL script into individual statements or
+    spans of statements based on statement headers declared in SQL script.
+    These should be denoted by placing headers above the statements within
+    within the SQL file as shown below:
+    /*-statement_header-*/
+    CREATE OR REPLACE TABLE...
+
     """
 
-    def __init__(self, path):
+    def __init__(self, path: str):
         """
         Instantiating an instance of 'script' by calling ParseScript class
         on a path to a SQL script.
@@ -28,10 +28,11 @@ class ParseScript:
         Python side while editing & saving changes to the SQL file as well as
         ensures that all methods are using the latest version of the script.
 
-        :param path: Path to SQL script including file name
-        :type path: Raw string
+        Args:
+            path: Path to SQL script including file name
 
-        # Attributes
+        Attributes:
+
         path:
             (str) path to SQL script
         pattern:
@@ -63,6 +64,7 @@ class ParseScript:
         full_sql:
             (str) String containing all statements with valid headers combined
             into a single string.
+
         """
         self.path = path
         self.pattern = re.compile(r"/\*-(\w+)-\*/")
@@ -84,32 +86,37 @@ class ParseScript:
         ]
         self.full_sql = ";\n\n".join(self.header_statements)
 
-    def get_statement(self, header):
-        """
-        Returns a SQL statement given a statement header.
-        # For executing a single statement at a time - can also be used in
-        # conjunction with the iterable attributes or returned iterable from
-        # get_span() method.
-        :param header: header for statement in SQL script
-        :type header: str
-        :return: SQL statement
-        :rtype: str
+    def get_statement(self, header: str) -> str:
+        """Returns a SQL statement given a statement header.
+
+        For executing a single statement at a time - can also be used in
+        conjunction with the iterable attributes or returned iterable from
+        get_span() method.
+
+        Args:
+            header: Header for statement in SQL script
+        Returns:
+            Associated SQL statement based on header
+
         """
         self.script = ParseScript(self.path)
+
         self.statement = self.script.statement[header.lower()]
+
         return self.statement
 
-    def span_from_headers(self, first, last):
-        """
-        Returns a list of statements given the headers bounding the range.
-        # This gives users the ability to create multiple spans representing
-        # different parts of their script and execute separately if desired.
-        :param first: header of the first statement in the range
-        :type first: str
-        :param last: header of the last statement in the range
-        :type last: str
-        :return: a list of the statements in the range
-        :rtype: list
+    def span_from_headers(self, first: str, last: str) -> list:
+        """Returns a list of statements given the headers bounding the range.
+
+        This gives users the ability to create multiple spans representing
+        different parts of their script and execute separately if desired.
+
+        Args:
+            first: Header of the first statement in the range
+            last: Header of the last statement in the range
+        Returns:
+            A list of executable SQL statements within the [first, last] range.
+
         """
         self.start = self.spans[first]
         self.finish = self.spans[last]
@@ -123,17 +130,18 @@ class ParseScript:
         ]
         return self.statements
 
-    def span_from_index(self, lower, upper):
-        """
-        Returns a list of statements given the indices bounding the range.
-        # This gives users the ability to create multiple spans representing
-        # different parts of their script and execute separately if desired.
-        :param lower: index of the first statement in the range
-        :type lower: int
-        :param upper: index of the last statement in the range
-        :type upper: int
-        :return: a list of the statements in the range
-        :rtype: list
+    def span_from_index(self, lower: int, upper: int) -> list:
+        """Returns a list of statements given the indices bounding the range.
+
+        This gives users the ability to create multiple spans representing
+        different parts of their script and execute separately if desired.
+
+        Args:
+            lower: Index of the first statement in the range
+            upper: Index of the last statement in the range
+        Returns:
+            A list of executable SQL statements within the [first, last] range.
+
         """
         self.lower = lower
         self.upper = upper
