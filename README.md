@@ -4,18 +4,17 @@
 who desire a more fluid workflow between raw SQL and Python. 
 
 As such the included codes are intended to be used for the execution of raw SQL and don't make use any ORM to map Python objects to tabular Snowflake
-counterparts and should not.
+counterparts.
  
-A brief overview of each is outlined below.
+A brief overview of each module is outlined below.
 
 
 ---
 ### snowcreds
-`snowcreds` is comprised of a single class extracted to its own module for easier evolving along with security standards, 
+`snowcreds` is comprised of a single class intentionally isolated for easier evolving along with security standards, 
 its instantiation of `Credentials()` accepts the below two arguments and associated defaults
-
-    ```python
-    def __init__(self, config_file: str = 'snowflake_config.json',
+```python
+def __init__(self, config_file: str = 'snowflake_config.json',
                  conn_name: str = '') -> None:
         """
         Instantiates an instance of credentials file
@@ -28,7 +27,7 @@ its instantiation of `Credentials()` accepts the below two arguments and associa
         """
         self.config_file = config_file
         self.conn_name = conn_name
-        ```
+```
 Once instantiated, the `.get()` method will traverse a user's file system and return the full path to the first file it finds with a filename matching `config_file`.
 
 **The .json file itself is assumed to store its credentials following [this](https://github.com/GEM7318/Snowmobile/blob/master/connection_credentials_SAMPLE.json) format**
@@ -37,8 +36,12 @@ Once instantiated, the `.get()` method will traverse a user's file system and re
 ### snowconn
 `snowconn` is also comprised of a single class, `Connection()`, that inherits `Credentials()` to retrieve a set of credentials with which to establish a connection to the database.
 
-Once instantiated with the inherited `config_file` and `conn_name` attributes, the `.get_conn()` method will locate the credentials file, import the specified credentials, authenticate and return a `conn` object.
-
+Once instantiated with the inherited `config_file` and `conn_name` attributes, the `.get_conn()` method will locate the credentials file, import the specified credentials, authenticate and return a `conn` 
+object as shown below for an illustrative **SANDBOX** set of credentials within the config file.
+```python
+from snowmobile import snowconn
+creds = snowconn.Connection(conn_name='SANDBOX').get_conn()
+```
 
 ---
 ### snowquery
