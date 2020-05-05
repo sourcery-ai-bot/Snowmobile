@@ -62,8 +62,9 @@ s3transfer==0.3.3
 six==1.14.0
 snowballstemmer==2.0.0
 snowflake-connector-python==2.2.5
--e git+git@github.com:GEM7318/Snowmobile.git@6b7a9d0bd0f0b1b0abf684230dbb12b3ffe66063#egg=snowmobile
+-e git+git@github.com:GEM7318/Snowmobile.git@71d6e21a0fec26ad793a66d8be10cdc1a1c8bb38#egg=snowmobile
 Sphinx==3.0.3
+sphinx-rtd-theme==0.4.3
 sphinxcontrib-applehelp==1.0.2
 sphinxcontrib-devhelp==1.0.2
 sphinxcontrib-htmlhelp==1.0.3

@@ -1,10 +1,8 @@
-==========
 modules
-==========
+=======
 
 .. toctree::
-   :maxdepth: 5
-
+   :maxdepth: 2
    snowcreds <snowcreds>
    snowconn <snowconn>
    snowloader <snowloader>
