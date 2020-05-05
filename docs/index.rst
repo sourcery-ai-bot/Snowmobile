@@ -13,9 +13,11 @@ Modules
 Other
 =====
 .. toctree::
-    License <license>
-    Authors <authors>
-    Changelog <changelog>
+   :maxdepth: 2
+
+   License <license>
+   Authors <authors>
+   Changelog <changelog>
 
 
 Indices and tables
