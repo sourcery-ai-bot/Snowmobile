@@ -14,6 +14,7 @@ import os
 import sys
 
 # sys.path.insert(0, os.path.abspath('.'))
+print(os.path.abspath('.'))
 
 # ----------/GEM/-----------------------
 sys.path.insert(0, os.path.join(os.path.abspath('.').split('docs')[0],
@@ -70,7 +71,7 @@ html_static_path = ['_static']
 
 # Napoleon settings
 napoleon_google_docstring = True
-napoleon_numpy_docstring = False
+napoleon_numpy_docstring = True
 napoleon_include_init_with_doc = True
 napoleon_include_private_with_doc = True
 napoleon_include_special_with_doc = True
