@@ -6,7 +6,7 @@ A simple set of modules for streamlined interaction with the Snowflake Database 
 
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Contents:
 
    License <license>
@@ -17,6 +17,6 @@ A simple set of modules for streamlined interaction with the Snowflake Database 
 Indices and tables
 ==================
 
-* :ref:`genindex`
 * :ref:`modindex`
+* :ref:`genindex`
 * :ref:`search`
