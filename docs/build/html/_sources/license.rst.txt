@@ -2,4 +2,4 @@
 License
 =======
 
-.. include:: ~/CHANGELOG.rst
+.. include:: C:/Users/GEM7318/Documents/Github/Snowmobile/LICENSE.txt

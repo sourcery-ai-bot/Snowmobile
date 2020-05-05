@@ -19,8 +19,10 @@ import sys
 sys.path.insert(0, os.path.join(os.path.abspath('.').split('docs')[0],
                                 'src', 'snowmobile'))
 
-module_dir = os.path.join(os.path.abspath('.').split('docs')[0],
-                          'src', 'snowmobile')
+# module_dir = os.path.join(os.path.abspath('.').split('docs')[0],
+#                           'src', 'snowmobile')
+module_dir = os.path.join(os.path.abspath('.').split('docs')[0].split(
+    'home')[0], 'src', 'snowmobile')
 output_dir = os.path.join(os.path.abspath('..'), 'build', 'doctrees')
 
 print(f"module_dir:\n\t{module_dir}\n")
