@@ -13,6 +13,7 @@ A simple set of modules for streamlined interaction with the Snowflake Database 
    Authors <authors>
    Changelog <changelog>
    Modules <modules>
+   Module Reference <api/modules>
 
 
 Indices and tables

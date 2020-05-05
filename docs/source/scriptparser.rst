@@ -1,4 +1,4 @@
 scriptparser
 ============
 
-.. include:: ../src/snowmobile/scriptparser.py
+.. include:: build/lib/snowmobile/scriptparser.py

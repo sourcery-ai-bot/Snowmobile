@@ -14,7 +14,6 @@ A simple set of modules for streamlined interaction with the Snowflake Database 
    Changelog <changelog>
    Modules <modules>
 
-
 Indices and tables
 ==================
 
