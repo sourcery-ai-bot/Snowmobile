@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.join(os.path.abspath('.').split('docs')[0],
 
 
 print(f"GEM-os.path.abspath('.'):\n\t{os.path.abspath('.')}\n")
-print(f"GEM-os.path.abspath('.'):\n\t{os.path.abspath('..')}\n")
+print(f"GEM-os.path.abspath('..'):\n\t{os.path.abspath('..')}\n")
 
 # -- Project information -----------------------------------------------------
 
