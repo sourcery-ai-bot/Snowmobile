@@ -89,6 +89,7 @@ dependencies:
   - uriparser=0.9.3=h33f27b4_1
   - vc=14.1=h0510ff6_4
   - vs2015_runtime=14.16.27012=hf0eaf9b_1
+  - pip==20.1
   - wcwidth=0.1.9=py_0
   - webencodings=0.5.1=py37_1
   - wheel=0.34.2=py37_0
@@ -109,7 +110,6 @@ dependencies:
     - ijson==2.6.1
     - jmespath==0.9.5
     - oscrypto==1.2.0
-    - pip==20.1
     - pockets==0.9.1
     - pycryptodomex==3.9.7
     - pyscaffoldext-markdown==0.3.2
