@@ -6,7 +6,7 @@ A simple set of modules for streamlined interaction with the Snowflake Database 
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    License <license>

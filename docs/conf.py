@@ -47,7 +47,8 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
               'sphinx.ext.napoleon', 'sphinx_rtd_theme', 'recommonmark',
               'autoapi.extension']
 
-autoapi_dirs = ['../src/snowmobile', '../AUTHORS.rst']
+autoapi_dirs = ['../src/snowmobile', '../AUTHORS.rst', '../LICENSE.txt',
+                '../CHANGELOG.rst', '../README.md']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

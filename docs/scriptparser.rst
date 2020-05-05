@@ -1,4 +1,7 @@
 scriptparser
 ============
 
-.. include:: scriptparser.py
+.. toctree::
+   :maxdepth: 2
+
+.. include:: ../src/snowmobile/scriptparser.py
