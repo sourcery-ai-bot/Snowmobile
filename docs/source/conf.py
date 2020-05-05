@@ -19,46 +19,6 @@ import sys
 sys.path.insert(0, os.path.join(os.path.abspath('.').split('docs')[0],
                                 'src', 'snowmobile'))
 
-# module_dir = os.path.join(os.path.abspath('.').split('docs')[0],
-#                           'src', 'snowmobile')
-module_dir = os.path.join(os.path.abspath('.').split('docs')[0].split(
-    'home')[0], 'src', 'snowmobile')
-output_dir = os.path.join(os.path.abspath('..'), 'build', 'doctrees')
-
-print(f"module_dir:\n\t{module_dir}\n")
-print(f"output_dir:\n\t{output_dir}\n")
-
-# print(f"Current output:\n\t{os.path.abspath('.')}\n")
-# print(f"Second output:\n\t{os.path.abspath('..')}")
-
-import shutil
-
-try:  # for Sphinx >= 1.7
-    from sphinx.ext import apidoc
-except ImportError:
-    from sphinx import apidoc
-
-try:
-    shutil.rmtree(output_dir)
-except FileNotFoundError:
-    pass
-
-try:
-    import sphinx
-    from pkg_resources import parse_version
-
-    cmd_line_template = "sphinx-apidoc -f -o {outputdir} {moduledir}"
-    cmd_line = cmd_line_template.format(outputdir=output_dir,
-                                        moduledir=module_dir)
-
-    args = cmd_line.split(" ")
-    if parse_version(sphinx.__version__) >= parse_version('1.7'):
-        args = args[1:]
-
-    apidoc.main(args)
-except Exception as e:
-    print("Running `sphinx-apidoc` failed!\n{}".format(e))
-
 # -- Project information -----------------------------------------------------
 
 project = 'snowmobile'
