@@ -8,6 +8,3 @@ python:
             - docs
    system_packages: true
 
- sphinx:
-   configuration: docs/source/conf.py
-   
