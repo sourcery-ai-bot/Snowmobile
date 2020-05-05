@@ -14,15 +14,15 @@ import os
 import sys
 
 # sys.path.insert(0, os.path.abspath('.'))
-print(os.path.abspath('.'))
+print(os.path.abspath('source'))
 
 # ----------/GEM/-----------------------
-sys.path.insert(0, os.path.join(os.path.abspath('.').split('docs')[0],
+sys.path.insert(0, os.path.join(os.path.abspath('source').split('docs')[0],
                                 'src', 'snowmobile'))
 
 
-print(f"GEM-os.path.abspath('.'):\n\t{os.path.abspath('.')}\n")
-print(f"GEM-os.path.abspath('..'):\n\t{os.path.abspath('..')}\n")
+print(f"GEM-os.path.abspath('.'):\n\t{os.path.abspath('source')}\n")
+print(f"GEM-os.path.abspath('..'):\n\t{os.path.abspath('')}\n")
 
 # -- Project information -----------------------------------------------------
 
@@ -44,7 +44,10 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx',
               'sphinx.ext.coverage',
               'sphinx.ext.doctest', 'sphinx.ext.ifconfig',
               'sphinx.ext.mathjax',
-              'sphinx.ext.napoleon', 'sphinx_rtd_theme', 'recommonmark']
+              'sphinx.ext.napoleon', 'sphinx_rtd_theme', 'recommonmark',
+              'autoapi.extension']
+
+autoapi_dirs = ['../src/snowmobile', '../AUTHORS.rst']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
