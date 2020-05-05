@@ -79,7 +79,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.todo',
 extensions.append('recommonmark')
 
 # Add any Sphinx extension module names here, as strings
-extensions = ['sphinxcontrib.napoleon']
+
 
 # Napoleon settings
 napoleon_google_docstring = True
@@ -158,14 +158,18 @@ exclude_patterns = ['_build']
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-# add_module_names = True
+add_module_names = True
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
+# pygments_style = 'solarized-light'
 pygments_style = 'sphinx'
+
+# from pygments.styles import get_all_styles
+# [val for val in get_all_styles()]
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -242,7 +246,7 @@ html_static_path = ['_static']
 # html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-# html_show_sourcelink = True
+html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 # html_show_sphinx = True

@@ -1,7 +1,12 @@
-snowmobile
+==========
+modules
 ==========
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
 
-   snowmobile
+   snowcreds <snowcreds>
+   snowconn <snowconn>
+   snowloader <snowloader>
+   snowquery <snowquery>
+   scriptparser <scriptparser>

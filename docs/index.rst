@@ -1,26 +1,25 @@
 ============================================
-https://pypi.org/project/snowmobile/
+Documentation
 ============================================
-Repo: https://github.com/GEM7318/Snowmobile
+
+:PyPi: https://pypi.org/project/snowmobile/
+:GitHub: https://github.com/GEM7318/Snowmobile
 
 Contents
 ========
-
 .. toctree::
    :maxdepth: 9
-
     :ref: License <license>
     :ref: Authors <authors>
     :ref: Changelog <changelog>
-    :ref: Modules <modules>
+* :ref:`modindex`
 
 
 Indices and tables
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
+* :ref:`genindex`
 
 .. _toctree: http://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html
 .. _reStructuredText: http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html

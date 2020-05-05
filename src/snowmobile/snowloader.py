@@ -273,10 +273,17 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         when the function is called
     (4) Deletes local file written out to load into a staging table
     (5) Deletes the staging table after load is completed successfully
+    (6) Returns a boolean value indicating whether or not the load was
+        successful or not, intended for exception handling use when iterating
+        through multiple files and appending to the same table
 
     Args:
         df: DataFrame to load to Snowflake
         table_name: Table name to load the data into
+        snowflake: Pre-instantiated snowquery.Snowflake() instance with
+            which to execute the load to Snowflake
+        conn_name: Name of connection to load to Snowflake if non-default
+            connection is desired or nothing is passed in the 'snowflake' param
         force_recreate: Boolean value indicating whether or not to recreate
             the table irrelevant of matching structure between local and DB
         keep_local: Boolean value indicating whether or not to keep the
@@ -287,25 +294,10 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         file_format: User-defined file_format within Snowflake
     Returns:
         Boolean value indicating whether or not load was
-            successful - can be particularly useful when iterating through
-            multiple files and appending to the same table and is intended
-            for use similar to the following, wherein all files that match the
-            structure of the table's DDL are loaded/appended and those that
-            do not are returned in a dictionary containing the file's name
-            and the columns of the DataFrame that failed to load;
+            successful
 
-            ```python
-            problem_files = {}
-            for file_name, df in dict_of_dfs.items():
-
-                loaded = df_to_snowflake(df, name_of_table)
-
-                if not loaded:
-                    problem_files[file_name] = df.columns
-
-            print(f"files_to_qa:\n\t{list(problem_files.keys()}")
-            ```
     """
+
     if not snowflake:
         snowflake = snowquery.Snowflake(conn_name=conn_name)
 
