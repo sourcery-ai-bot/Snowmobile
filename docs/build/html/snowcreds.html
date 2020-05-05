@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>snowcreds &mdash; snowmobile 0.0.16 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="snowconn" href="snowconn.html" />
+    <link rel="prev" title="modules" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> snowmobile
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">snowcreds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowconn.html">snowconn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowloader.html">snowloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowquery.html">snowquery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scriptparser.html">scriptparser</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">snowmobile</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">modules</a> &raquo;</li>
+        
+      <li>snowcreds</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/snowcreds.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="snowcreds">
+<h1>snowcreds<a class="headerlink" href="#snowcreds" title="Permalink to this headline">¶</a></h1>
+<p>import os
+import json</p>
+<p>class Credentials:</p>
+<blockquote>
+<div><dl>
+<dt>def __init__(self, config_file: str = 'snowflake_credentials.json',</dt><dd><blockquote>
+<div><p>conn_name: str = '') -&gt; None:</p>
+</div></blockquote>
+<p>&quot;&quot;&quot;Instantiates instances of the needed params to locate creds file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>config_file: Name of .json configuration file following the
+format of connection_credentials_SAMPLE.json.
+conn_name: Name of connection within json file to use - it will
+use first set of credentials in the file if no argument is passed.</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;</p>
+<p>self.config_file = config_file
+self.conn_name = conn_name</p>
+</dd>
+<dt>def get(self) -&gt; dict:</dt><dd><p>&quot;&quot;&quot;Locates creds file and parses out the specified set of credentials.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Dictionary containing a specific set of Snowflake credentials</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+print(f&quot;Searching for {self.config_file} in local file system..n&quot;)
+for dirpath, dirnames, files in os.walk(os.path.expanduser('~'),</p>
+<blockquote>
+<div><blockquote>
+<div><p>topdown=False):</p>
+</div></blockquote>
+<dl class="simple">
+<dt>if self.config_file in files:</dt><dd><p>path_to_config = os.path.join(dirpath, self.config_file)
+break</p>
+</dd>
+<dt>else:</dt><dd><p>path_to_config = ''
+pass</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>if not path_to_config:</dt><dd><p>print(f&quot;Could not find {self.config_file} in file system&quot;)</p>
+</dd>
+<dt>else:</dt><dd><dl class="simple">
+<dt>with open(path_to_config) as c:</dt><dd><p>all_creds = json.load(c)</p>
+</dd>
+<dt>print(f&quot;Located &amp; loaded {self.config_file} from:nt&quot;</dt><dd><p>f&quot;{path_to_config}&quot;)</p>
+</dd>
+</dl>
+</dd>
+<dt>if not self.conn_name:</dt><dd><p>self.conn_name = next(iter(all_creds.keys()))</p>
+</dd>
+<dt>else:</dt><dd><p>pass</p>
+</dd>
+</dl>
+<p>creds = all_creds.get(self.conn_name)</p>
+<p>return creds</p>
+</dd>
+</dl>
+</div></blockquote>
+<p># creds = Credentials().get()
+# creds.get()
+# creds.conn_name</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="snowconn.html" class="btn btn-neutral float-right" title="snowconn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral float-left" title="modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Grant E Murray
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>scriptparser &mdash; snowmobile 0.0.16 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="snowquery" href="snowquery.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> snowmobile
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="snowcreds.html">snowcreds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowconn.html">snowconn</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowloader.html">snowloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowquery.html">snowquery</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">scriptparser</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">snowmobile</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">modules</a> &raquo;</li>
+        
+      <li>scriptparser</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/scriptparser.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="scriptparser">
+<h1>scriptparser<a class="headerlink" href="#scriptparser" title="Permalink to this headline">¶</a></h1>
+<p>import re
+import sqlparse</p>
+<dl>
+<dt>class ParseScript:</dt><dd><p>&quot;&quot;&quot;
+Active-parsing of SQL script in Python for seamless development loop.</p>
+<p>Enables flexible parsing of a SQL script into individual statements or
+spans of statements based on statement headers declared in SQL script.
+These should be denoted by placing headers above the statements within
+within the SQL file as shown below:
+/<em>-statement_header-</em>/
+CREATE OR REPLACE TABLE...</p>
+<p>&quot;&quot;&quot;</p>
+<dl>
+<dt>def __init__(self, path: str):</dt><dd><p>&quot;&quot;&quot;
+Instantiating an instance of 'script' by calling ParseScript class
+on a path to a SQL script.</p>
+<p>Structured this way so that each method within the class
+re-instantiates a new instance of 'script' (i.e. re-imports the raw
+file from local).</p>
+<p>This keeps users from having to alter or re-import anything on the
+Python side while editing &amp; saving changes to the SQL file as well as
+ensures that all methods are using the latest version of the script.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path: Path to SQL script including file name</p>
+</dd>
+</dl>
+<p>Attributes:</p>
+<dl class="simple">
+<dt>path:</dt><dd><p>(str) path to SQL script</p>
+</dd>
+<dt>pattern:</dt><dd><p>(re.pattern) regex pattern that SQL statement headers are
+wrapped in</p>
+</dd>
+<dt>script_txt:</dt><dd><p>(str) raw SQL script read in as text file</p>
+</dd>
+<dt>list_of_statements:</dt><dd><p>(list) list of all SQL statements in SQL script (both with and
+without headers)</p>
+</dd>
+<dt>statement_names:</dt><dd><p>(list) List of statement headers - including blank entries for
+statements that do not have headers (these instances have entries
+equal to '[]')</p>
+</dd>
+<dt>statement:</dt><dd><p>(dict) Dictionary containing {'header': 'associated_sql'} - note
+the conditionals within the comprehensions that throw out entries
+from both lists that do not have a valid statement_header</p>
+</dd>
+<dt>spans:</dt><dd><p>(dict) Dictionary containing {'header': 'index_position_in_script'}
+and is used in the get_span() method</p>
+</dd>
+<dt>ordered_statements:</dt><dd><p>(list) List of statements in the order in which they appear in the
+script. Note that these are only statements that have a valid
+headers in the SQL file</p>
+</dd>
+<dt>header_statements:</dt><dd><p>(str) List of all statements with their headers prepended to them,
+same length as ordered_statements</p>
+</dd>
+<dt>full_sql:</dt><dd><p>(str) String containing all statements with valid headers combined
+into a single string.</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+self.path = path
+self.pattern = re.compile(r&quot;/*-(w+)-*/&quot;)
+self.script_txt = open(path).read()
+self.list_of_statements = self.script_txt.split(&quot;;&quot;)
+self.statement_names = [</p>
+<blockquote>
+<div><p>self.pattern.findall(self.statement)
+for self.statement in self.list_of_statements</p>
+</div></blockquote>
+<p>]
+self.statement = {</p>
+<blockquote>
+<div><p>k[0].lower(): sqlparse.format(v, strip_comments=True).lstrip().rstrip()
+for k, v in zip(self.statement_names, self.list_of_statements)
+if k != []</p>
+</div></blockquote>
+<p>}
+self.spans = {val: i for i, val in enumerate(self.statement.keys())}
+self.ordered_statements = [val for val in self.statement.values()]
+self.header_statements = [</p>
+<blockquote>
+<div><p>f&quot;/<em>-{head.upper()}-</em>/n{sql}&quot; for head, sql in self.statement.items()</p>
+</div></blockquote>
+<p>]
+self.full_sql = &quot;;nn&quot;.join(self.header_statements)</p>
+</dd>
+<dt>def get_statement(self, header: str) -&gt; str:</dt><dd><p>&quot;&quot;&quot;Returns a SQL statement given a statement header.</p>
+<p>For executing a single statement at a time - can also be used in
+conjunction with the iterable attributes or returned iterable from
+get_span() method.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>header: Header for statement in SQL script</p>
+</dd>
+<dt>Returns:</dt><dd><p>Associated SQL statement based on header</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+self.script = ParseScript(self.path)</p>
+<p>self.statement = self.script.statement[header.lower()]</p>
+<p>return self.statement</p>
+</dd>
+<dt>def span_from_headers(self, first: str, last: str) -&gt; list:</dt><dd><p>&quot;&quot;&quot;Returns a list of statements given the headers bounding the range.</p>
+<p>This gives users the ability to create multiple spans representing
+different parts of their script and execute separately if desired.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>first: Header of the first statement in the range
+last: Header of the last statement in the range</p>
+</dd>
+<dt>Returns:</dt><dd><p>A list of executable SQL statements within the [first, last] range.</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+self.start = self.spans[first]
+self.finish = self.spans[last]
+self.indexed_statements = {v: k for k, v in self.spans.items()}
+self.range_statements = [</p>
+<blockquote>
+<div><p>self.indexed_statements[i] for i in range(self.start, self.finish)</p>
+</div></blockquote>
+<p>]
+self.statements = [</p>
+<blockquote>
+<div><p>f&quot;/<em>-{head.upper()}-</em>/n{self.get_statement(head)}&quot;
+for head in self.range_statements</p>
+</div></blockquote>
+<p>]
+return self.statements</p>
+</dd>
+<dt>def span_from_index(self, lower: int, upper: int) -&gt; list:</dt><dd><p>&quot;&quot;&quot;Returns a list of statements given the indices bounding the range.</p>
+<p>This gives users the ability to create multiple spans representing
+different parts of their script and execute separately if desired.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>lower: Index of the first statement in the range
+upper: Index of the last statement in the range</p>
+</dd>
+<dt>Returns:</dt><dd><p>A list of executable SQL statements within the [first, last] range.</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+self.lower = lower
+self.upper = upper
+self.indexed_statements = {v: k for k, v in self.spans.items()}
+self.range_statements = [</p>
+<blockquote>
+<div><dl class="simple">
+<dt>self.indexed_statements[i] for i in range(self.lower, self.upper</dt><dd><ul class="simple">
+<li><p>1)]</p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>self.statements = [</dt><dd><p>f&quot;/<em>-{head.upper()}-</em>/n{self.get_statement(head)}&quot;
+for head in self.range_statements]</p>
+</dd>
+</dl>
+<p>return self.statements</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="snowquery.html" class="btn btn-neutral float-left" title="snowquery" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Grant E Murray
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

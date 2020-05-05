@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>snowloader &mdash; snowmobile 0.0.16 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="snowquery" href="snowquery.html" />
+    <link rel="prev" title="snowconn" href="snowconn.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> snowmobile
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="snowcreds.html">snowcreds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowconn.html">snowconn</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">snowloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="snowquery.html">snowquery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scriptparser.html">scriptparser</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">snowmobile</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">modules</a> &raquo;</li>
+        
+      <li>snowloader</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/snowloader.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="snowloader">
+<h1>snowloader<a class="headerlink" href="#snowloader" title="Permalink to this headline">¶</a></h1>
+<p># Imports
+from snowmobile import snowquery
+import pandas as pd
+import string
+import os
+import itertools
+import csv
+import datetime</p>
+<dl>
+<dt>def standardize_col(col: str) -&gt; str:</dt><dd><p>&quot;&quot;&quot;Standardize a column for Snowflake table.</p>
+<ol class="arabic simple">
+<li><p>Replaces spaces with underscores, trims leading &amp; trailing
+underscores, forces upper-case</p></li>
+<li><p>Replaces special characters with underscores</p></li>
+<li><p>Reduces repeated special characters</p></li>
+</ol>
+<dl class="simple">
+<dt>Args:</dt><dd><p>col: A single string value of a column name</p>
+</dd>
+<dt>Returns:</dt><dd><p>A string that has been re-formatted/standardized for Snowflake
+standards</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+col = ((col.replace(' ', '_')).strip('_')).upper()  # 1</p>
+<dl class="simple">
+<dt>invalid_punct = [punct for punct in string.punctuation if</dt><dd><p>punct != '_']  # 2</p>
+</dd>
+<dt>repl_invalid_punct = str.maketrans(''.join(invalid_punct),</dt><dd><p>'_' * len(invalid_punct))</p>
+</dd>
+</dl>
+<p>col = ''.join(col.translate(repl_invalid_punct))</p>
+<p>new_chars = []  # 3</p>
+<dl>
+<dt>for k, v in itertools.groupby(col):</dt><dd><p>v_list = list(v)</p>
+<dl class="simple">
+<dt>if k in string.punctuation or k in string.whitespace:</dt><dd><p>new_chars.append(k)</p>
+</dd>
+<dt>else:</dt><dd><p>new_chars.append(''.join(v_list))</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>col = ''.join(new_chars)</p>
+<p>return col</p>
+</dd>
+<dt>def rename_cols_for_snowflake(df: pd.DataFrame) -&gt; pd.DataFrame:</dt><dd><p>&quot;&quot;&quot;Renaming DataFrame columns for Snowflake table.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>df: pd.DataFrame to be pushed to Snowflake</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>pd.DataFrame with re-formatted column names and a</dt><dd><p>'loaded_tmstmp' field added on the far right side</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+df['LOADED_TMSTMP'] = datetime.datetime.now()
+old_cols = list(df.columns)
+new_cols = [standardize_col(val) for val in df.columns]
+new_col_map = {k: v for k, v in zip(old_cols, new_cols)}
+df = df.rename(columns=new_col_map)
+return df</p>
+</dd>
+<dt>def get_ddl(df: pd.DataFrame, table_name: str) -&gt; str:</dt><dd><p>&quot;&quot;&quot;Gets DDL for a table given a DataFrame.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>df: pd.DataFrame to push to Snowflake.
+table_name: Name of table to load the DataFrame into.</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>DDL to be executed to create table structure to load DataFrame</dt><dd><p>into (for force-recreation of a table or loading into a table that
+doesn't previously exist)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+final_ddl = </p>
+<blockquote>
+<div><dl class="simple">
+<dt>pd.io.sql.get_schema(df, table_name).replace('CREATE TABLE',</dt><dd><p>'CREATE OR REPLACE TABLE')</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>return final_ddl</p>
+</dd>
+<dt>def check_information_schema(table_name: str,</dt><dd><blockquote>
+<div><p>snowflake: snowquery.Snowflake) -&gt; list:</p>
+</div></blockquote>
+<p>&quot;&quot;&quot;Checks information schema for existence of table &amp; returns columns
+for comparison to local DataFrame if so.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>table_name: Name of table to load the df into
+snowflake: snowquery.Snowflake object to execute statement with</p>
+</dd>
+<dt>Returns:</dt><dd><p>Columns of the table within database or an empty list if not</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;</p>
+<dl>
+<dt>sql = f&quot;&quot;&quot;SELECT</dt><dd><blockquote>
+<div><p>ORDINAL_POSITION
+,COLUMN_NAME</p>
+</div></blockquote>
+<p>FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table_name}'
+ORDER BY 1 ASC&quot;&quot;&quot;</p>
+</dd>
+</dl>
+<p>validation_df = snowflake.execute_query(sql)</p>
+<dl class="simple">
+<dt>try:</dt><dd><p>table_cols = list(validation_df['COLUMN_NAME'])</p>
+</dd>
+<dt>except:</dt><dd><p>table_cols = []</p>
+</dd>
+</dl>
+<p>return table_cols</p>
+</dd>
+<dt>def compare_fields(df_cols: list, table_cols: list) -&gt; int:</dt><dd><p>&quot;&quot;&quot;Returns match-count of column names in DataFrame compared to the table.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>df_cols: Columns of the DataFrame to load
+table_cols: Columns of the table the DataFrame is being loaded into</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Count of matches between the table and the DataFrame's</dt><dd><p>columns - will return a zero if the table does not exist at all</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+matched_list = []
+for i, (df_col, tbl_col) in enumerate(zip(df_cols, table_cols), start=1):</p>
+<blockquote>
+<div><dl class="simple">
+<dt>if df_col == tbl_col:</dt><dd><p>matched_list.append(i)</p>
+</dd>
+<dt>else:</dt><dd><p>pass</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>matched_cnt = len(matched_list)</p>
+<p>return matched_cnt</p>
+</dd>
+<dt>def validate_table(df: pd.DataFrame, table_name: str,</dt><dd><blockquote>
+<div><p>snowflake: snowquery.Snowflake) -&gt; tuple:</p>
+</div></blockquote>
+<p>&quot;&quot;&quot;Analyzes count of matching columns to count of cols in df to load.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>df: pd.DataFrame to load into Snowflake
+table_name: Name of table to load df into</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Tuple of boolean values indicating all possible combinations of a</dt><dd><p>table existing (Y/N) and the columns of the table matching those in
+the DataFrame</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+table_cols = check_information_schema(table_name, snowflake)</p>
+<p>df_cols = list(df.columns)</p>
+<p>cnt_matches = compare_fields(df_cols, table_cols)</p>
+<dl class="simple">
+<dt>if cnt_matches == len(df_cols) and cnt_matches == len(table_cols):</dt><dd><p>outcome = True, True  # Table exists &amp; fields match</p>
+</dd>
+<dt>elif len(table_cols) != 0:</dt><dd><p>outcome = True, False  # Table exists but fields don't match</p>
+</dd>
+<dt>else:</dt><dd><p>outcome = False, False  # Table doesn't exist</p>
+</dd>
+</dl>
+<p>return outcome</p>
+</dd>
+<dt>def verify_load(snowflake: snowquery.Snowflake,</dt><dd><blockquote>
+<div><p>df: pd.DataFrame, table_name: str, force_recreate: bool =
+False) -&gt; bool:</p>
+</div></blockquote>
+<p>&quot;&quot;&quot;Performs pre-loading operations and comparisons to table in-warehouse.</p>
+<ol class="arabic simple">
+<li><p>Performs comparison of local DataFrame to in-warehouse table and
+creates/recreate the table if needed</p></li>
+<li><p>Will not automatically recreate a table if it already exists but
+cannot append the contents of the DataFrame without modification</p></li>
+</ol>
+<dl>
+<dt>Args:</dt><dd><p>df: pd.DataFrame to push to Snowflake
+table_name: String representation of table name to load the df into
+force_recreate: Boolean value to indicating whether or not to</p>
+<blockquote>
+<div><p>force-recreation of table</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Boolean value indicating whether or not the</dt><dd><p>loading process will occur successfully if continued based on the
+local to in-warehouse comparison</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+print(f&quot;&lt;validating load into {table_name}&gt;&quot;)</p>
+<p>df = rename_cols_for_snowflake(df)</p>
+<dl class="simple">
+<dt>table_exists, fields_match = validate_table(df, table_name,</dt><dd><p>snowflake=snowflake)</p>
+</dd>
+</dl>
+<p>table_ddl = get_ddl(df, table_name)</p>
+<dl>
+<dt>if not table_exists:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tTable: {table_name} created in absence of pre-existing &quot;
+f&quot;tablen&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = True
+snowflake.execute_query(table_ddl)</p>
+</dd>
+<dt>elif table_exists and fields_match and not force_recreate:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tTable: {table_name} already exists w/ matching field namesn&quot;
+f&quot;- continuing load and will append data to tablen&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = True</p>
+</dd>
+<dt>elif table_exists and fields_match and force_recreate:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tTable: {table_name} Already exists w/ matching field names &quot;
+f&quot;- Recreated by user w/ force_recreate=Truen&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = True
+snowflake.execute_query(table_ddl)</p>
+</dd>
+<dt>elif table_exists and not fields_match and not force_recreate:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tColumns in {table_name} don't match those in local DataFrame&quot;
+f&quot;nt- Use <cite>force_recreate=True</cite> to overwrite existing tablen&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = False</p>
+</dd>
+<dt>elif table_exists and not fields_match and force_recreate:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tTable: {table_name} columns don't match those in local &quot;
+f&quot;DataFrame n- Force-recreated by usern&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = True
+snowflake.execute_query(table_ddl)</p>
+</dd>
+<dt>else:</dt><dd><dl class="simple">
+<dt>print(</dt><dd><p>f&quot;tUnknown error occured w/ load of {table_name} to Snowflake &quot;
+f&quot;nt- please check snowmobile.snowloader source codes&quot;)</p>
+</dd>
+</dl>
+<p>continue_load = False</p>
+</dd>
+</dl>
+<p>return continue_load</p>
+</dd>
+<dt>def remove_local(file_path: str, keep_local: bool = False) -&gt; None:</dt><dd><p>&quot;&quot;&quot;Removes local copy of exported file post-loading.</p>
+<dl>
+<dt>Args:</dt><dd><p>file_path: Path to write local file to
+keep_local: Boolean value indicating whether or not to delete local</p>
+<blockquote>
+<div><p>file post-load</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;
+if keep_local is False:</p>
+<blockquote>
+<div><p>os.remove(file_path)
+print(f&quot;n&lt;Local copy of file deleted from {file_path}&gt;&quot;)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>else:</dt><dd><p>print(f&quot;n&lt;Local copy of file saved in {file_path}&gt;&quot;)</p>
+</dd>
+</dl>
+<p>return None</p>
+</dd>
+<dt>def df_to_snowflake(df: pd.DataFrame, table_name: str,</dt><dd><blockquote>
+<div><p>snowflake: snowquery.Snowflake = '', conn_name: str = '',
+force_recreate: bool = False, keep_local: bool = False,
+output_location: str = os.getcwd(),
+on_error: str = 'continue',
+file_format: str = 'csv_gem7318') -&gt; object:</p>
+</div></blockquote>
+<p>&quot;&quot;&quot;Loads DataFrame to a Snowflake table through a variety of operations.</p>
+<ol class="arabic simple">
+<li><p>Prepares DataFrame for load by standardizing column names
+and adding a 'LOADED_TMSTMP' field to the far right side</p></li>
+<li><p>Checks for existence of the table in Snowflake and compares
+structure of in-warehouse table to that of local DataFrame</p></li>
+<li><p>Defaults to creating the table if it doesn't exist, appending to the
+table if it exists with matching field names/data types and will
+forgo loading the data/return a boolean value of False if
+otherwise; this can be over-ridden by passing <cite>force_recreate=True</cite>
+when the function is called</p></li>
+<li><p>Deletes local file written out to load into a staging table</p></li>
+<li><p>Deletes the staging table after load is completed successfully</p></li>
+<li><p>Returns a boolean value indicating whether or not the load was
+successful or not, intended for exception handling use when iterating
+through multiple files and appending to the same table</p></li>
+</ol>
+<dl>
+<dt>Args:</dt><dd><p>df: DataFrame to load to Snowflake
+table_name: Table name to load the data into
+snowflake: Pre-instantiated snowquery.Snowflake() instance with</p>
+<blockquote>
+<div><p>which to execute the load to Snowflake</p>
+</div></blockquote>
+<dl class="simple">
+<dt>conn_name: Name of connection to load to Snowflake if non-default</dt><dd><p>connection is desired or nothing is passed in the 'snowflake' param</p>
+</dd>
+<dt>force_recreate: Boolean value indicating whether or not to recreate</dt><dd><p>the table irrelevant of matching structure between local and DB</p>
+</dd>
+<dt>keep_local: Boolean value indicating whether or not to keep the</dt><dd><p>local .csv that is written out in the process</p>
+</dd>
+<dt>output_location: Location to write out local .csv to; defaults to</dt><dd><p>current working directory</p>
+</dd>
+</dl>
+<p>on_error: Query parameter for how to handle loading errors
+file_format: User-defined file_format within Snowflake</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Boolean value indicating whether or not load was</dt><dd><p>successful</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>&quot;&quot;&quot;</p>
+<dl class="simple">
+<dt>if not snowflake:</dt><dd><p>snowflake = snowquery.Snowflake(conn_name=conn_name)</p>
+</dd>
+<dt>continue_load = verify_load(snowflake=snowflake, df=df,</dt><dd><p>table_name=table_name,
+force_recreate=force_recreate)</p>
+</dd>
+</dl>
+<p>if continue_load:</p>
+<blockquote>
+<div><p>file_name = f&quot;{table_name}.csv&quot;  # File name for local copy
+file_path = os.path.join(output_location,</p>
+<blockquote>
+<div><p>file_name)  # Path to write to</p>
+</div></blockquote>
+<dl class="simple">
+<dt>df.to_csv(file_path, index=False, sep='|', header=False, quotechar='&quot;',</dt><dd><p>quoting=csv.QUOTE_ALL)  # Exporting csv</p>
+</dd>
+<dt>create_stage = </dt><dd><p>f&quot;create or replace stage {table_name}_stage file_format &quot; f&quot;= {file_format};&quot;</p>
+</dd>
+<dt>put_path = file_path.replace('\',</dt><dd><p>'\\')  # Escaped path for put statement</p>
+</dd>
+<dt>put_file = f&quot;put '<a class="reference external" href="file:/">file:/</a>/{put_path}' &#64;{table_name}_stage &quot; </dt><dd><p>f&quot;auto_compress=true overwrite=true;&quot;</p>
+</dd>
+<dt>copy_into = f&quot;copy into {table_name}n&quot; </dt><dd><p>f&quot;from &#64;{table_name}_stagen&quot; f&quot;on_error = '{on_error}';&quot;</p>
+</dd>
+</dl>
+<p>drop_stage = f&quot;drop stage {table_name}_stage;&quot;</p>
+<p>statements = [create_stage, put_file, copy_into, drop_stage]</p>
+<p># snowflake = sf.Snowflake()
+# snowflake.connect()</p>
+<p>for i, statement in enumerate(statements, start=1):</p>
+<blockquote>
+<div><dl>
+<dt>try:</dt><dd><p>result = snowflake.execute_query(statement)</p>
+<dl class="simple">
+<dt>print(</dt><dd><p>f&quot;n&lt;{i} of {len(statements)} completed&gt;:nt&quot;
+f&quot;{statement}nResponse:t&quot;)</p>
+</dd>
+<dt>list_responses = </dt><dd><dl class="simple">
+<dt>[</dt><dd><p>f&quot;{' '.join(col.title().split('_'))}: &quot;
+f&quot;{result.iat[0, i1]}&quot;
+for i1, col in enumerate(list(result.columns))]</p>
+</dd>
+</dl>
+</dd>
+<dt>for response in list_responses:</dt><dd><p>print(f&quot;t{response}&quot;)</p>
+</dd>
+</dl>
+</dd>
+<dt>except:</dt><dd><p>print(f&quot;&lt;statement failed&gt;n{statement}nn&quot;)
+break</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>remove_local(file_path, keep_local)  # Defaults to delete local file</p>
+</div></blockquote>
+<dl class="simple">
+<dt>else:</dt><dd><p>pass</p>
+</dd>
+<dt>if list(df.columns)[-1:] == ['LOADED_TMSTMP']:</dt><dd><p>df.drop(columns=list(df.columns)[-1:], axis=1, inplace=True)</p>
+</dd>
+<dt>else:</dt><dd><p>pass</p>
+</dd>
+</dl>
+<p>return continue_load</p>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="snowquery.html" class="btn btn-neutral float-right" title="snowquery" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="snowconn.html" class="btn btn-neutral float-left" title="snowconn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Grant E Murray
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

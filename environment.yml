@@ -2,6 +2,7 @@ name: snowmobile
 channels:
   - conda-forge
   - defaults
+  - pip
 dependencies:
   - alabaster=0.7.12=py37_0
   - arrow-cpp=0.15.1=py37h47fa567_6

@@ -1,7 +1,6 @@
 # snowmobile
 
-`snowmobile` is a simple set of modules for streamlined interaction with the Snowflake Database for Data Scientists and Business Analysts
-who desire a more fluid workflow between raw SQL and Python. 
+`snowmobile` is a simple set of modules for streamlined interaction with the Snowflake Database for Data Scientists and Business Analysts.
 
 As such the included codes are intended to be used for the execution of raw SQL and don't make use any ORM to map Python objects to tabular Snowflake
 counterparts.
