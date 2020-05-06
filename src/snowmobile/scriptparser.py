@@ -10,14 +10,19 @@ class ParseScript:
     spans of statements based on statement headers declared in SQL script.
     These should be denoted by placing headers above the statements within
     within the SQL file as shown below:
-    /*-statement_header-*/
-    CREATE OR REPLACE TABLE...
+
+    .. code-block:: sql
+
+        /*-statement_header-*/
+        create or replace table sample_table as
+        select
+            *
+        from sample_other
 
     """
 
     def __init__(self, path: str):
-        """
-        Instantiating an instance of 'script' by calling ParseScript class
+        """Instantiating an instance of 'script' by calling ParseScript class
         on a path to a SQL script.
 
         Structured this way so that each method within the class
@@ -32,7 +37,6 @@ class ParseScript:
             path: Path to SQL script including file name
 
         Attributes:
-
         path:
             (str) path to SQL script
         pattern:

@@ -4,7 +4,7 @@ modules
 .. toctree::
    :maxdepth: 2
 
-   snowcreds <../snowcreds>
+   snowcreds <snowcreds>
    snowconn <snowconn>
    snowloader <snowloader>
    snowquery <snowquery>

@@ -21,6 +21,7 @@ def standardize_col(col: str) -> str:
     Returns:
         A string that has been re-formatted/standardized for Snowflake
         standards
+
     """
     col = ((col.replace(' ', '_')).strip('_')).upper()  # 1
 
@@ -52,8 +53,8 @@ def rename_cols_for_snowflake(df: pd.DataFrame) -> pd.DataFrame:
     Args:
         df: pd.DataFrame to be pushed to Snowflake
     Returns:
-        pd.DataFrame with re-formatted column names and a
-            'loaded_tmstmp' field added on the far right side
+        pd.DataFrame with re-formatted column names and a *loaded_tmstmp*
+        field added on the far right side
     """
     df['LOADED_TMSTMP'] = datetime.datetime.now()
     old_cols = list(df.columns)
@@ -70,9 +71,9 @@ def get_ddl(df: pd.DataFrame, table_name: str) -> str:
         df: pd.DataFrame to push to Snowflake.
         table_name: Name of table to load the DataFrame into.
     Returns:
-        DDL to be executed to create table structure to load DataFrame
-            into (for force-recreation of a table or loading into a table that
-            doesn't previously exist)
+        DDL to be executed to create table structure to load DataFrame into
+        (for force-recreation of a table or loading into a table that
+        doesn't previously exist)
     """
     final_ddl = \
         pd.io.sql.get_schema(df, table_name).replace('CREATE TABLE',
@@ -116,8 +117,8 @@ def compare_fields(df_cols: list, table_cols: list) -> int:
         df_cols: Columns of the DataFrame to load
         table_cols: Columns of the table the DataFrame is being loaded into
     Returns:
-        Count of matches between the table and the DataFrame's
-            columns - will return a zero if the table does not exist at all
+        Count of matches between the table and the DataFrame's columns and
+        will return a zero if the table does not exist at all
     """
     matched_list = []
     for i, (df_col, tbl_col) in enumerate(zip(df_cols, table_cols), start=1):
@@ -142,8 +143,8 @@ def validate_table(df: pd.DataFrame, table_name: str,
         table_name: Name of table to load df into
     Returns:
         Tuple of boolean values indicating all possible combinations of a
-            table existing (Y/N) and the columns of the table matching those in
-            the DataFrame
+        table existing (Y/N) and the columns of the table matching those in
+        the DataFrame
     """
     table_cols = check_information_schema(table_name, snowflake)
 
@@ -177,11 +178,11 @@ def verify_load(snowflake: snowquery.Snowflake,
         df: pd.DataFrame to push to Snowflake
         table_name: String representation of table name to load the df into
         force_recreate: Boolean value to indicating whether or not to
-            force-recreation of table
+        force-recreation of table
     Returns:
-        Boolean value indicating whether or not the
-            loading process will occur successfully if continued based on the
-            local to in-warehouse comparison
+        Boolean value indicating whether or not the loading process will
+        occur successfully if continued based on the local to in-warehouse
+        comparison
     """
     print(f"<validating load into {table_name}>")
 
@@ -259,23 +260,34 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
                     force_recreate: bool = False, keep_local: bool = False,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
-                    file_format: str = 'csv_gem7318') -> object:
+                    file_format: str = 'csv_gem7318') -> bool:
     """Loads DataFrame to a Snowflake table through a variety of operations.
 
     (1) Prepares DataFrame for load by standardizing column names
-        and adding a 'LOADED_TMSTMP' field to the far right side
+        and adding a *LOADED_TMSTMP* field to the far right side
     (2) Checks for existence of the table in Snowflake and compares
         structure of in-warehouse table to that of local DataFrame
     (3) Defaults to creating the table if it doesn't exist, appending to the
         table if it exists with matching field names/data types and will
         forgo loading the data/return a boolean value of False if
-        otherwise; this can be over-ridden by passing `force_recreate=True`
+        otherwise; this can be over-ridden by passing ``force_recreate=True``
         when the function is called
     (4) Deletes local file written out to load into a staging table
     (5) Deletes the staging table after load is completed successfully
     (6) Returns a boolean value indicating whether or not the load was
         successful or not, intended for exception handling use when iterating
-        through multiple files and appending to the same table
+        through multiple files and appending to the same table such as:
+
+        .. code-block:: python
+
+            non_uniform_cols = {}
+            for df_name, df in dfs_to_load.items():
+
+                loaded = snowloader.df_to_snowflake(df, 'COMBINED_DFS')
+                if not loaded:
+                    non_uniform_cols[df_name] = df.columns
+
+            print(f"Df(s) w/ Non-Uniform Columns:\\n\\t{non_uniform_cols.keys()}")
 
     Args:
         df: DataFrame to load to Snowflake
@@ -293,8 +305,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         on_error: Query parameter for how to handle loading errors
         file_format: User-defined file_format within Snowflake
     Returns:
-        Boolean value indicating whether or not load was
-            successful
+        Boolean value indicating whether or not load was successful
 
     """
 
@@ -307,18 +318,22 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
     if continue_load:
 
-        file_name = f"{table_name}.csv"  # File name for local copy
-        file_path = os.path.join(output_location,
-                                 file_name)  # Path to write to
+        # File name for local copy
+        file_name = f"{table_name}.csv"
+
+        # Path to write to
+        file_path = os.path.join(output_location, file_name)
+
+        # Exporting csv to local drive
         df.to_csv(file_path, index=False, sep='|', header=False, quotechar='"',
-                  quoting=csv.QUOTE_ALL)  # Exporting csv
+                  quoting=csv.QUOTE_ALL)
 
         create_stage = \
             f"create or replace stage {table_name}_stage file_format " \
             f"= {file_format};"
 
-        put_path = file_path.replace('\\',
-                                     '\\\\')  # Escaped path for put statement
+        # Escaped path for put statement
+        put_path = file_path.replace('\\', '\\\\')
 
         put_file = f"put 'file://{put_path}' @{table_name}_stage " \
                    f"auto_compress=true overwrite=true;"
@@ -331,9 +346,6 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
         statements = [create_stage, put_file, copy_into, drop_stage]
 
-        # snowflake = sf.Snowflake()
-        # snowflake.connect()
-
         for i, statement in enumerate(statements, start=1):
 
             try:
@@ -344,9 +356,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
                     f"{statement}\nResponse:\t")
 
                 list_responses = \
-                    [
-                        f"{' '.join(col.title().split('_'))}: "
-                        f"{result.iat[0, i1]}"
+                    [f"{' '.join(col.title().split('_'))}: {result.iat[0, i1]}"
                         for i1, col in enumerate(list(result.columns))]
 
                 for response in list_responses:
