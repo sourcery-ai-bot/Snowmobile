@@ -31,7 +31,7 @@ copyright = '2020, Grant E Murray'
 author = 'Grant E Murray'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.16'
+release = '0.0.17'
 
 # -- General configuration ---------------------------------------------------
 
