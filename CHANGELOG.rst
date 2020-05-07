@@ -1,5 +1,7 @@
 
 
-* Version 0.0.16
+* Version 0.0.18:
+    - Support for Python 3.8
+
 
 
