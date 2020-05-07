@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Setup file for cusersgem7318documentsgithubsnowmobile.
+    Setup file for snowmobile.
     Use setup.cfg to configure project.
 """
 import sys
