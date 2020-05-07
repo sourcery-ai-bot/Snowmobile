@@ -1,4 +1,4 @@
-# Imports
+
 from snowmobile import snowquery
 import pandas as pd
 import string
