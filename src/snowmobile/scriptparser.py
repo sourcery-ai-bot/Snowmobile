@@ -1,6 +1,7 @@
 
 import re
 import sqlparse
+from IPython.core.display import display, Markdown
 
 
 class ParseScript:
@@ -159,3 +160,22 @@ class ParseScript:
             for head in self.range_statements]
 
         return self.statements
+
+    def render_sql(self, sql: str) -> None:
+        """Renders SQL as markdown when called in IPython environment.
+
+        Useful when combining explanation of different components of a SQL
+        script in notebook or similar environment.
+
+        Args:
+            sql: Raw SQL text to display
+        """
+        if isinstance(sql, list):
+            self.sql = ';\n\n'.join(sql)
+
+        display(Markdown(f"```mysql\n{self.sql}\n```"))
+
+        return None
+
+
+
