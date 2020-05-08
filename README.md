@@ -88,8 +88,8 @@ creds = snowconn.Connection(conn_name='SANDBOX').get_conn()
 ---
 ## snowquery
 `snowquery` makes use of the two modules above for simplified execution of statements against the database via an `execute_query()` method, which, itself
-uses [pandas'](https://pandas.pydata.org/) `pd.read_sql` function in conjunction to execute the SQL and will return results from the DataBase
-in the form of a [dataframe](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html) by default.
+uses [pandas'](https://pandas.pydata.org/) `pd.read_sql` function to execute the SQL and return results from the DataBase
+as a [dataframe](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html) by default.
 
 Its usage to query via set of credentials stored in _snowflake_credentials.json_ labeled **SANDBOX** is as follows.
 
