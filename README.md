@@ -38,7 +38,7 @@ as desired and store anywhere on local file system
       }
     }
    ```
-   
+        
 3. Import desired modules and execute a statement to test connection
     ```python
     # bundled authentication & statement-execution module  
@@ -50,6 +50,7 @@ as desired and store anywhere on local file system
     # Execute statements on that connection 
     sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
     ```
+
 
 ---
 ## snowcreds

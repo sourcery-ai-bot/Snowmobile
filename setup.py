@@ -1,19 +1,36 @@
-# -*- coding: utf-8 -*-
-"""
-    Setup file for snowmobile.
-    Use setup.cfg to configure project.
-"""
-import sys
-
-from pkg_resources import VersionConflict, require
+import pathlib
 from setuptools import setup
+from setuptools import find_packages
 
-try:
-    require('setuptools>=38.3')
-except VersionConflict:
-    print("Error: version of setuptools is too old (<38.3)!")
-    sys.exit(1)
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
 
+# The text of the README file
+README = (HERE / "README.md").read_text()
 
-if __name__ == "__main__":
-    setup(use_pyscaffold=True)
+# This call to setup() does all the work
+setup(
+    name="snomobile",
+    version="0.0.19",
+    description="A simple set of modules for streamlined interaction with the Snowflake Database",
+    long_description=README,
+    long_description_content_type="text/markdown",
+    url="https://github.com/GEM7318/Snowmobile",
+    author="Grant Murray",
+    author_email="gmurray203@gmail.com",
+    license="MIT",
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+    ],
+    # packages=["snowmobile"],
+    packages=find_packages(exclude=("tests",)),
+    include_package_data=True,
+    install_requires=['pandas', 'snowflake-connector-python', 'sqlparse'],
+    entry_points={
+        "console_scripts": [
+            "snowmobile=snowmobile.__main__:main",
+        ]
+    },
+)
