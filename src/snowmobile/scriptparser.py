@@ -161,7 +161,8 @@ class ParseScript:
 
         return self.statements
 
-    def render_sql(self, sql: str) -> None:
+    @staticmethod
+    def render_sql(sql: str) -> None:
         """Renders SQL as markdown when called in IPython environment.
 
         Useful when combining explanation of different components of a SQL
@@ -171,11 +172,8 @@ class ParseScript:
             sql: Raw SQL text to display
         """
         if isinstance(sql, list):
-            self.sql = ';\n\n'.join(sql)
+            sql = ';\n\n'.join(sql)
 
-        display(Markdown(f"```mysql\n{self.sql}\n```"))
+        display(Markdown(f"```mysql\n{sql}\n```"))
 
         return None
-
-
-
