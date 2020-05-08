@@ -8,10 +8,15 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
+import subprocess
+version_str = \
+    str((subprocess.check_output(['git', 'describe']).strip())). \
+        replace("'", '').replace('b', '')
+
 # This call to setup() does all the work
 setup(
     name="snomobile",
-    version="0.0.19",
+    version=version_str,
     description="A simple set of modules for streamlined interaction with the Snowflake Database",
     long_description=README,
     long_description_content_type="text/markdown",
