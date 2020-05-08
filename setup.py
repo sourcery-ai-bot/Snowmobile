@@ -16,7 +16,7 @@ version_str = \
 
 # This call to setup() does all the work
 setup(
-    name="snomobile",
+    name="snowmobile",
     version=version_str,
     description="A simple set of modules for streamlined interaction with the Snowflake Database",
     long_description=README,
