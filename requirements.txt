@@ -35,4 +35,6 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-napoleon==0.7
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.4
+sqlparse==0.3.1
 urllib3==1.25.9
+ipython==7.14.0
