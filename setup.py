@@ -1,6 +1,7 @@
 import pathlib
 from setuptools import setup
 from setuptools import find_packages
+import subprocess
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -8,7 +9,7 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
-import subprocess
+
 version_str = \
     str((subprocess.check_output(['git', 'describe']).strip())). \
         replace("'", '').replace('b', '')
