@@ -32,8 +32,8 @@ author = 'Grant E Murray'
 # The full version, including alpha/beta/rc tags
 import subprocess
 release = \
-    str((subprocess.check_output(['git', 'describe']).strip())). \
-        replace("'", '').replace('b', '')
+    str((subprocess.check_output(['git', 'describe']).strip())).\
+        split('-')[0].replace("'", '').replace('b', '')
 
 # -- General configuration ---------------------------------------------------
 
