@@ -1,4 +1,3 @@
-
 import os
 import json
 
@@ -27,7 +26,9 @@ class Credentials:
             Dictionary containing a specific set of Snowflake credentials
 
         """
-        print(f"Searching for {self.config_file} in local file system..\n")
+        print("Locating & importing credentials..")
+        print(f"\t<1 of 4> Searching for {self.config_file} in local file "
+              f"system..")
         for dirpath, dirnames, files in os.walk(os.path.expanduser('~'),
                                                 topdown=False):
             if self.config_file in files:
@@ -37,20 +38,34 @@ class Credentials:
                 path_to_config = ''
                 pass
 
-        if not path_to_config:
-            print(f"Could not find {self.config_file} in file system")
+        if not os.path.isfile(path_to_config):
+            print(f"\tCould not find {self.config_file} in file system!")
         else:
             with open(path_to_config) as c:
                 all_creds = json.load(c)
-            print(f"Located & loaded {self.config_file} from:\n\t"
-                  f"{path_to_config}")
+            print(f"\n\t<2 of 4> Located & loaded {self.config_file} "
+                  f"from:\n\t\t{path_to_config}")
 
         if not self.conn_name:
             self.conn_name = next(iter(all_creds.keys()))
+            print(f"\n\t<3 of 4> No explicit connection passed, fetching "
+                  f"'{self.conn_name}' credentials by default")
         else:
-            pass
+            print(f"\n\t<3 of 4> Fetching '{self.conn_name}' credentials "
+                  f"from {self.config_file}")
+            # pass
 
         creds = all_creds.get(self.conn_name)
+
+        if creds:
+            print(f"\n\t<4 of 4> Successfully imported credentials for "
+                  f"conn_name='{self.conn_name}'")
+
+        else:
+            print(f"\n\t<4 of 4> Could not parse conn_name='{self.conn_name}'"
+                  f"from {self.config_file}\n\t\tPlease specify a different "
+                  f"configuration file, connection name, or check that the "
+                  f"contents of the configuration file")
 
         return creds
 
