@@ -33,7 +33,7 @@ author = 'Grant E Murray'
 import subprocess
 release = \
     str((subprocess.check_output(['git', 'describe']).strip())).\
-        split('-')[0].replace("'", '').replace('b', '')
+    split('-')[0].replace("'", '')
 
 # -- General configuration ---------------------------------------------------
 

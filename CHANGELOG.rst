@@ -21,4 +21,6 @@
             - ``.raw()`` to return the raw string of sql
 * Version 0.1.3
     - Quick patch of HTML tag causing explosion in the docs
+* Version 0.1.4
+    - Switching dynamic tags to include beta indicator
 
