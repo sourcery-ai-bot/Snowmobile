@@ -303,7 +303,10 @@ is defined with the following arguments allowing for this flexibility.
 <br></br>
 Resulting in the following functionality within **IPython/Jupyter** environments
 
-<img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
+<img style="float: center;" src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
+
+<br></br>
+#### End `Snowmobile.scriptparser` Example Usage
 
 ---
 # snowloader
