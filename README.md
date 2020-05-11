@@ -301,8 +301,9 @@ is defined with the following arguments allowing for this flexibility.
         """
 ```
 <br></br>
-Resulting in the following functionality within **IPython/Jupyter** environments:
-<center><img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  /></center>
+Resulting in the following functionality within **IPython/Jupyter** environments
+
+<img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
 
 ---
 # snowloader
