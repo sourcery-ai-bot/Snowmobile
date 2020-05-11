@@ -2,7 +2,6 @@ import re
 import sqlparse
 from IPython.core.display import display, Markdown
 from snowmobile import snowquery
-import pandas as pd
 import os
 
 
@@ -32,7 +31,7 @@ class Statement:
 
         return self.sql
 
-    def run(self, return_results=True) -> object:
+    def execute(self, return_results=True) -> object:
         """Executes sql and returns results"""
         if return_results:
             return self.snowflake.execute_query(self.sql)
@@ -113,7 +112,7 @@ class Script(Statement):
         self.pattern = re.compile(pattern)
         with open(self.source, 'r') as f:
             self.script_txt = f.read()
-        self.list_of_statements = self.script_txt.split(";")
+        self.list_of_statements = sqlparse.split(self.script_txt)
         self.statement_names = \
             [self.pattern.findall(self.statement) for self.statement in
              self.list_of_statements]
@@ -148,3 +147,9 @@ class Script(Statement):
             self.returned[k] = Statement(v, self.snowflake)
 
         return self.returned
+
+    def run(self) -> None:
+        """Executes entire script a statement at a time."
+        """
+        for raw_sql in self.list_of_statements:
+            self.snowflake.execute_query(raw_sql)
