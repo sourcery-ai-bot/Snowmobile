@@ -1,9 +1,10 @@
+
 import snowflake.connector as sf
 import pandas as pd
 from snowmobile import snowconn
 
 
-class Snowflake(snowconn.Connection):
+class Connector(snowconn.Connection):
     """Primary Connection and Query Execution Class"""
 
     def __init__(self, config_file: str = 'snowflake_credentials.json',
@@ -14,40 +15,60 @@ class Snowflake(snowconn.Connection):
                                         conn_name=self.conn_name).get_conn()
 
     def execute_query(self, query: str, from_file: bool = False,
-                      filepath='') -> pd.DataFrame:
-        # con = self.conn
+                      filepath='', return_results=True) -> pd.DataFrame:
         """Run commands in Snowflake.
 
         Args:
             query: Raw SQL to execute.
             from_file: Boolean value indicating whether or not to read the
             query from a local file.
+            filepath: Full file path to .sql script if looking to execute a
+            single-statement script on the fly, most useful for executing
+            extracted DDL as part of a cleanup.
+        Returns:
+            Results from query in a Pandas DataFrame by default or None if
+            ``return_results=False`` is passed when function is called.
         """
-        if from_file and filepath:
+        self.query = query
+        self.from_file = from_file
+        self.filepath = filepath
+        self.return_results = return_results
+
+        if self.from_file and self.filepath:
 
             try:
-                query = open(filepath).read()
+                self.query = open(self.filepath).read()
 
             except sf.errors.ProgrammingError as e:
                 print("There was an error reading the file.")
-                query = None
+                self.query = None
 
-        if query:
+        if self.query:
 
             try:
-                results = pd.read_sql(query, self.conn)
+                self.results = pd.read_sql(query, self.conn)
 
             except sf.errors.ProgrammingError as e:
                 print(e)  # default error message
                 print(f'Error {e.errno} ({e.sqlstate}): {e.msg} ('
                       f'{e.sfqid})')  # custom error message
-                results = None
+                self.results = None
 
         else:
-            results = None
+            self.results = None
 
-        return results
+        if self.return_results:
+            return self.results
 
-    def disconnect(self):
+        else:
+            return None
+
+    def disconnect(self) -> None:
+        """Disconnect from connection with which Connect() was instantiated.
+
+        Returns:
+            None
+
+        """
         self.conn.close()
         return None

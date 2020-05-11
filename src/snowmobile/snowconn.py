@@ -3,22 +3,20 @@
 import snowflake.connector
 from snowmobile import snowcreds as creds
 
-class Connection(creds.Credentials):
 
+class Connection(creds.Credentials):
+    """Instantiate with inherited attributes from snowcreds.
+
+    Args:
+        config_file: Name of .json configuration file following the
+            format of connection_credentials_SAMPLE.json.
+        conn_name: Name of connection within json file to use - it will
+            use first set of credentials in the file if no argument is
+            passed.
+
+    """
     def __init__(self, config_file: str = 'snowflake_credentials.json',
                  conn_name: str = ''):
-        
-        """Instantiate with inherited attributes from snowcreds.
-
-        Args:
-            config_file: Name of .json configuration file following the
-                format of connection_credentials_SAMPLE.json.
-            conn_name: Name of connection within json file to use - it will
-                use first set of credentials in the file if no argument is
-                passed.
-
-        """
-
         super().__init__()
 
         self.config_file = config_file

@@ -82,13 +82,13 @@ def get_ddl(df: pd.DataFrame, table_name: str) -> str:
 
 
 def check_information_schema(table_name: str,
-                             snowflake: snowquery.Connect) -> list:
+                             snowflake: snowquery.Connector) -> list:
     """Checks information schema for existence of table & returns columns
     for comparison to local DataFrame if so.
 
     Args:
         table_name: Name of table to load the df into
-        snowflake: snowquery.Connect object to execute statement with
+        snowflake: snowquery.Connector object to execute statement with
     Returns:
         Columns of the table within database or an empty list if not
     """
@@ -135,7 +135,7 @@ def compare_fields(df_cols: list, table_cols: list) -> int:
 
 
 def validate_table(df: pd.DataFrame, table_name: str,
-                   snowflake: snowquery.Connect) -> tuple:
+                   snowflake: snowquery.Connector) -> tuple:
     """Analyzes count of matching columns to count of cols in df to load.
 
     Args:
@@ -164,7 +164,7 @@ def validate_table(df: pd.DataFrame, table_name: str,
     return outcome
 
 
-def verify_load(snowflake: snowquery.Connect,
+def verify_load(snowflake: snowquery.Connector,
                 df: pd.DataFrame, table_name: str, force_recreate: bool =
                 False) -> bool:
     """Performs pre-loading operations and comparisons to table in-warehouse.
@@ -203,7 +203,7 @@ def verify_load(snowflake: snowquery.Connect,
     elif table_exists and fields_match and not force_recreate:
         print(
             f"\tTable: {table_name} already exists w/ matching field names\n"
-            f"- continuing load and will append data to table\n")
+            f"\t- continuing load and will append data to table\n")
         continue_load = True
 
     elif table_exists and fields_match and force_recreate:
@@ -256,7 +256,7 @@ def remove_local(file_path: str, keep_local: bool = False) -> None:
 
 
 def df_to_snowflake(df: pd.DataFrame, table_name: str,
-                    snowflake: snowquery.Connect = '', conn_name: str = '',
+                    snowflake: snowquery.Connector = '', conn_name: str = '',
                     force_recreate: bool = False, keep_local: bool = False,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
@@ -292,7 +292,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
     Args:
         df: DataFrame to load to Snowflake
         table_name: Table name to load the data into
-        snowflake: Pre-instantiated snowquery.Connect() instance with
+        snowflake: Pre-instantiated snowquery.Connector() instance with
             which to execute the load to Snowflake
         conn_name: Name of connection to load to Snowflake if non-default
             connection is desired or nothing is passed in the 'snowflake' param
@@ -310,7 +310,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
     """
 
     if not snowflake:
-        snowflake = snowquery.Connect(conn_name=conn_name)
+        snowflake = snowquery.Connector(conn_name=conn_name)
 
     continue_load = verify_load(snowflake=snowflake, df=df,
                                 table_name=table_name,
