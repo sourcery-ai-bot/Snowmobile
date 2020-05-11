@@ -1,6 +1,6 @@
+--snowscripter_sample.sql
 
-
-/*-contrived_example-*/
+/*-contrived_example_aggregation-*/
 create or replace temp table index_agg as with
 contrived_1 as (
 	select
