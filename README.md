@@ -6,8 +6,8 @@
 
 `snowmobile` is a simple set of modules for streamlined interaction with the Snowflake Database for Data Scientists and Business Analysts.
 
-As such the included codes are intended to be used for the execution of raw SQL and don't make use an ORM to map Python objects to tabular Snowflake
-counterparts.
+As such the included codes are intended to be used for the execution of raw SQL or with native DataFrames and don't make use of an ORM to 
+map Python objects to tabular Snowflake counterparts. 
 
 A quick overview of simplified usage is outlined below.
 
@@ -52,7 +52,6 @@ as desired and store anywhere on local file system
     sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
     ```
 
-<br></br>
 # Modules
 
 ## Overview
@@ -73,9 +72,9 @@ DDL in absence of a pre-existing table
 A more in-depth description of of each module and its usage outlined below.
 
 ---
-## snowquery
+# snowquery
 
-#### Description
+### Description
 `snowquery` simplifies the execution of sql statements against the database via an `execute_query()` 
 method, using [pandas'](https://pandas.pydata.org/) `pd.read_sql` function to execute the SQL and  returning results from the DataBase as a [dataframe](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html) by default.
 
@@ -83,7 +82,7 @@ method, using [pandas'](https://pandas.pydata.org/) `pd.read_sql` function to ex
 and is better-suited for ad-hoc statements whereas `snowscripter` imports an external .sql file & extracts its components into Python objects that come with cleaner methods for execution.
 
 
-#### Usage
+### Usage
 Its usage to query via set of credentials stored in _snowflake_credentials.json_ labeled **SANDBOX** is as follows.
 
 ```python
@@ -105,9 +104,9 @@ pandas.core.frame.DataFrame
 ```
 
 ---
-## snowscripter
+# snowscripter
 
-### Description
+## Description
 
 `snowscripter` imports an external .sql file & transforms it into Python objects on which methods can be called to perform a variety of actions.
 
@@ -127,13 +126,10 @@ The `Script` object is instantiated with the following three arguments, of which
         """ 
 ```
 
-
-
 The usage for this module is broken up into **script-level** and **statement-level** usage below, the latter of which contains the majority of application.
 
 ---
-
-### Usage (script-level)
+## Usage (script-level)
 
 In its simplest form, users can instantiate an instance of `script` by running the below where _path_ is a full file path to a .sql file.
 
@@ -144,10 +140,9 @@ script = snowscripter.Script(path)
 This will return a Script object on which the `.run()` method can be called to execute an entire script  sequentially statement by statement.
 
 ---
+## Usage (statement-level)
 
-### Usage (statement-level)
-
-##### Background
+#### Background
 The real benefit of `snowscripter` comes from the use of 'header' tags within the sql script that form a link between a specified name and an individual statement - these identified in the parser by the regex pattern contained in the `pattern` argument of the object's instantiation.
 
 The pattern's default is '**/\\\*-(\\w.*)-\\\*/**'  and will return all text between a standard sql block-comment whose contents are wrapped in an additional '-', such as:
@@ -161,10 +156,9 @@ from...
 
 To make this more clear, below is a walk-through usage illustration in which a sample table is created and then `scriptparser` is used to parse a few sql statements and execute them against the table.
 
-##### Start Example
+### Working Example
 
-The following Python snippet is creates a dummy DataFrame and loading it to the warehouse for the
-exercise.
+The following Python snippet creates a dummy DataFrame and loads it to the warehouse for use during the exercise.
 
 *Setup / creating dummy data*
 
@@ -186,7 +180,7 @@ snowloader.df_to_snowflake(df, table_name='SAMPLE_TABLE', force_recreate=True, s
 ```
 
 
-**Local .sql file**
+#### Local .sql file
 
 Now that we have a sample table to query against, consider two statements stored in the .sql file
 below.
@@ -228,9 +222,9 @@ having count(*) <> 1;
 ```
 
 
-**Instantiating parsed script object**
+#### Instantiating parsed script object
 
-In Python, we can instantiate a `scriptparser.Script` object from this with:
+In Python, we can instantiate a `scriptparser.Script` object from this file with:
 ```python
 from snowmobile import snowscripter
   
@@ -239,7 +233,7 @@ script = snowscripter.Script(path_to_script, snowflake=demo_conn)
 ```
 
 
-**Accessing & executing statements**
+#### Accessing & executing statements
 
 Now instantiated, we can work with different parts of our script either through the `script` object or extracting individual `Statement` objects & associated methods from `script`.
 
@@ -279,7 +273,7 @@ A few different examples of this are as follows
 
 
 
-**Executing and rendering statements simultaneously**
+#### Executing and rendering statements simultaneously
 
 Lastly, it's often helpful to execute a statement as well as render the sql behind it.
 
@@ -290,7 +284,7 @@ Below is a screenshot of what this looks like from within a notebook.
 <img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
 
 ---
-## snowloader
+# snowloader
 `snowloader` streamlines the bulk-loading protocol outlined in the [Snowflake documentation](https://docs.snowflake.com/en/user-guide/data-load-overview.html)
 in the form of a `df_to_snowflake()` function and is intended to be a one-stop solution for the quick loading of data.
 
@@ -334,9 +328,9 @@ In general and particularly when iteratively loaded multiple files into the data
 that's passed into the `df_to_snowflake()` function so that it does not need to find, read-in and parse the credentials file each time its called.
 
 ---
-## snowcreds
+# snowcreds
 
-##### Description
+### Description
 
 `snowcreds` is a single class intentionally extracted for easier evolving along with security standards, 
 its instantiation of `Credentials()` accepts the below two arguments and associated defaults
@@ -362,7 +356,7 @@ stored in the **.json** file.
 *The .json file itself is assumed to store its credentials following [this](https://github.com/GEM7318/Snowmobile/blob/master/connection_credentials_SAMPLE.json) format*
 <br></br>
 
-##### Usage
+### Usage
 
 **Note**: The instantiation of `snowcreds` is somewhat verbose and has been left us such for the time being as it is a back-end utility and not intended
 to be called by the users explicitly
@@ -383,15 +377,15 @@ Locating & importing credentials..
 ```
 
 ---
-## snowconn
+# snowconn
 
-#### Description
+### Description
 `snowconn` is also comprised of a single class, `Connection()`, that inherits `Credentials()` to retrieve a set of credentials with which to establish a connection to the database.
 
 Its instantiation and usage is very similar to `snowcreds` as it inherits the `config_file` and `conn_name` attributes and includes a `.get_conn()` method will authenticate using the credentials
 returned by `snowcreds.get()`
 
-#### Usage
+### Usage
 
 The below codes instantiate an instance of Connection used in higher-level modules.
 

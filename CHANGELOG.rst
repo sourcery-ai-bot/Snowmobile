@@ -19,5 +19,6 @@
                   is to combine the execution of a statement and rendering the sql code itself
             - ``.render()`` to render syntax-highlighted statement in IPython/Jupyter environments
             - ``.raw()`` to return the raw string of sql
-
+* Version 0.1.3
+    - Quick patch of HTML tag causing explosion in the docs
 
