@@ -221,7 +221,6 @@ group by 1
 having count(*) <> 1;
 ```
 
-
 #### Instantiating parsed script object
 
 In Python, we can instantiate a `scriptparser.Script` object from this file with:
