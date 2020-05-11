@@ -8,4 +8,4 @@ modules
    snowconn <snowconn>
    snowloader <snowloader>
    snowquery <snowquery>
-   scriptparser <scriptparser>
+   snowscripter <snowscripter>
