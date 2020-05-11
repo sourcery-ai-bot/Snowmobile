@@ -300,8 +300,8 @@ is defined with the following arguments allowing for this flexibility.
             useful for QA queries that are expected to return null-sets)
         """
 ```
-<br></br>
-This yields the following functionality in IPython environments:
+
+This yields the following functionality in IPython/Jupyter environments:
 
 <img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
 
