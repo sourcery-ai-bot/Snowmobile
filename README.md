@@ -287,7 +287,7 @@ To avoid having multiple method calls in these instances, the `.execute()` metho
 
 Below is a screenshot of what this looks like from within a notebook.
 
-<img src="usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
+<img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
 
 ---
 ## snowloader
