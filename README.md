@@ -249,9 +249,9 @@ script.statement.get('contrived_example_aggregation')
 ```
 but this isn't recommended as manually executing all those strings is significantly less convenient
 than the following two options.
-   
+
 ---
-- Access as a `Statement` object via the script's `.fetch()` method
+**Option 1**: Access as a `Statement` object via the script's `.fetch()` method
 
    ```python
    sample_statement_obj = script.fetch('contrived_example_aggregation')
@@ -261,8 +261,8 @@ than the following two options.
    - `.execute()` which executes the statement
    - `.render()` which renders the syntactic-code as a markdown in IPython environments 
    - `.raw()` which renders the raw sql as a string similarly to Option 1 above
----
-- Access `Statement` objects for all statements via the script's `.get_statements()` method
+
+**Option 2**: Access `Statement` objects for all statements via the script's `.get_statements()` method
 
    ```python
    iterable_statements = script.get_statements()
@@ -270,7 +270,8 @@ than the following two options.
       # statement_header will iterative through [contrived_example_aggregation, verify_contrived_join]
       # statement will be Statement objects from associated sql with access to .execute(), .render(), .raw()
    ```
-    - This will return an iterable containing `Statement` objects for all statements in the script
+This will return an iterable containing individual `Statement` objects for all statements in the script
+
 ---
 
 
