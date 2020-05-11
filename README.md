@@ -155,7 +155,7 @@ from...
 ```
 
 To make this more clear, a usage example is outlined in the below in which `scriptparser` is
-used to transform several simple sql statements and execute them against a sample table loaded in the warehouse.
+used to transform a few simple sql statements and execute them against a sample table loaded in the warehouse.
 
 
 ---
@@ -237,20 +237,21 @@ script = snowscripter.Script(path_to_script, snowflake=demo_conn)
 
 #### Accessing & executing statements
 
-Now instantiated, we can work with different parts of our script either through the `script` object or extracting individual `Statement` objects & associated methods from `script`.
+Now instantiated, we can work with different parts of our script either through the `script` 
+object or extracting individual `Statement` objects & their associated methods.
 
 A few different examples of this are as follows
 
-1. Accessing a single statement from the `script` object's namespace as a string (**not** recommended)
-
-    ```python
-   sample1 = script.statement.get('contrived_example_aggregation')
-   type(sample1)  # str
-   ```
+**Note**: It's technically possible to access each statement as a raw string by pulling it out of
+the `script` object's namespace with something like 
+```python
+script.statement.get('contrived_example_aggregation')
+```
+but this isn't recommended as manually executing all those strings is significantly less convenient
+than the following two options.
    
-   
-   
-2. Accessing a single statement as a `Statement` object via the `.fetch()` method on the `script` object (**recommended**)
+---
+- Access as a `Statement` object via the script's `.fetch()` method
 
    ```python
    sample_statement_obj = script.fetch('contrived_example_aggregation')
@@ -260,18 +261,17 @@ A few different examples of this are as follows
    - `.execute()` which executes the statement
    - `.render()` which renders the syntactic-code as a markdown in IPython environments 
    - `.raw()` which renders the raw sql as a string similarly to Option 1 above
-
-   
-
-3. To access these methods for all statements, the `.get_statements()` method call on the `script` object will return an itterable containing instantiated `Statement` objects for all statements in the script
+---
+- Access `Statement` objects for all statements via the script's `.get_statements()` method
 
    ```python
-   itterable_statements = script.get_statements()
+   iterable_statements = script.get_statements()
    for statement_header, statement in iterable_statements.items():
       # statement_header will iterative through [contrived_example_aggregation, verify_contrived_join]
       # statement will be Statement objects from associated sql with access to .execute(), .render(), .raw()
    ```
-
+    - This will return an iterable containing `Statement` objects for all statements in the script
+---
 
 
 
