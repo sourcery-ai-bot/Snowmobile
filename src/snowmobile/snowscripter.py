@@ -32,20 +32,30 @@ class Statement:
 
         return self.sql
 
-    def execute(self, return_results=True, render=False,
-                include_description=False) -> object:
+    def execute(self, results: bool = True, render: bool = False,
+                describe: bool = False) -> object:
         """Executes sql with option to return results / render sql as Markdown.
+
+        Args:
+            results: Boolean indicating whether or not to
+            return results
+            render: Boolean indicating whether or not to render the
+            raw sql as markdown
+            describe: Boolean indicating whether or not to
+            print output of a pandas df.describe() on returned results (mostly
+            useful for QA queries that are expected to return null-sets)
         """
-        self.results = self.snowflake.execute_query(self.sql)
+        self.returned = self.snowflake.execute_query(self.sql)
 
         if render:
             self.render()
 
-        if include_description:
-            print(f"\n{self.results.describe()}\n")
+        if describe:
+            print(f"\n-----results.describe()-----\n"
+                  f" {self.returned.describe()}\n")
 
-        if return_results:
-            return self.results
+        if results:
+            return self.returned
 
 
 class Script(Statement):
