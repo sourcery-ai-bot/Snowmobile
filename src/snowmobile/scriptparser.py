@@ -7,7 +7,7 @@ import os
 
 class Statement:
 
-    def __init__(self, sql, snowflake: snowquery.Snowflake = ''):
+    def __init__(self, sql, snowflake: snowquery.Connect = ''):
 
         self.sql = sql
         self.snowflake = snowflake
@@ -57,7 +57,7 @@ class Script(Statement):
     """
 
     def __init__(self, path: str, pattern: str = r"/\*-(\w.*)-\*/",
-                 snowflake: snowquery.Snowflake = ''):
+                 snowflake: snowquery.Connect = ''):
         """Instantiating an instance of 'script' by calling ParseScript class
         on a path to a SQL script.
 

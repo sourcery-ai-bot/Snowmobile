@@ -46,7 +46,7 @@ as desired and store anywhere on local file system
     from snowmobile import snowquery
    
     # Instantiate an instance of a connection
-    sf = snowquery.Snowflake(conn_name='SANDBOX')
+    sf = snowquery.Connect(conn_name='SANDBOX')
    
     # Execute statements on that connection 
     sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
@@ -97,7 +97,7 @@ Its usage to query via set of credentials stored in _snowflake_credentials.json_
 
 ```python
 from snowmobile import snowquery
-sf = snowquery.Snowflake(conn_name='SANDBOX')
+sf = snowquery.Connect(conn_name='SANDBOX')
 sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
 ```
 
@@ -133,7 +133,7 @@ snowloader.df_to_snowflake(df=floated_sample, table_name='SAMPLE_TABLE', force_r
 
 In the above,
 - *Option 1* will load the data back into Snowflake on the same connection that was established in the
-  `sf = snowquery.Snowflake(conn_name='SANDBOX')` statement by use of the `snowflake=sf` parameter
+  `sf = snowquery.Connect(conn_name='SANDBOX')` statement by use of the `snowflake=sf` parameter
 - In *Option 2* this argument is omitted and the function will instantiate a new connection based on the first set of credentials in **snowflake_credentials.json**
 
 
