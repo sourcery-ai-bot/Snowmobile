@@ -32,10 +32,20 @@ class Statement:
 
         return self.sql
 
-    def execute(self, return_results=True) -> object:
-        """Executes sql and returns results"""
+    def execute(self, return_results=True, render=False,
+                include_description=False) -> object:
+        """Executes sql with option to return results / render sql as Markdown.
+        """
+        self.results = self.snowflake.execute_query(self.sql)
+
+        if render:
+            self.render()
+
+        if include_description:
+            print(f"\n{self.results.describe()}\n")
+
         if return_results:
-            return self.snowflake.execute_query(self.sql)
+            return self.results
 
 
 class Script(Statement):
@@ -59,7 +69,7 @@ class Script(Statement):
 
     def __init__(self, path: str, pattern: str = r"/\*-(\w.*)-\*/",
                  snowflake: snowquery.Connector = ''):
-        """Instantiating an instance of 'script' by calling ParseScript class
+        """Instantiating an instance of 'script' by calling Script class
         on a path to a SQL script.
 
         Structured this way so that each method within the class
@@ -72,9 +82,9 @@ class Script(Statement):
 
         Args:
             path: Full path to SQL script including .sql extension
-            pattern:
-                (re.pattern) regex pattern that SQL statement headers are
-                wrapped in
+            pattern: Regex pattern that SQL statement headers are wrapped in
+            snowflake: Instantiated snowquery.Connector instance to use in
+            the execution of Script or Statement objects
 
         Instantiated Attributes:
             script_txt:
@@ -115,8 +125,8 @@ class Script(Statement):
             self.script_txt = f.read()
         self.list_of_statements = sqlparse.split(self.script_txt)
         self.statement_names = \
-            [self.pattern.findall(self.statement) for self.statement in
-             self.list_of_statements]
+            [self.pattern.findall(self.statement) for
+             self.statement in self.list_of_statements]
 
         self.statements = {
             k[0].lower():
@@ -132,6 +142,26 @@ class Script(Statement):
         self.full_sql = ";\n\n".join(self.header_statements)
         self.returned = {}
 
+    def reload_source(self) -> object:
+        """Reloads script from source file path.
+
+        """
+        with open(self.source, 'r') as f:
+            self.script_txt = f.read()
+
+        return self
+
+    def run(self) -> None:
+        """Executes entire script a statement at a time."
+        """
+        self.reload_source()
+
+        if not self.snowflake:
+            self.snowflake = snowquery.Connector()
+
+        for raw_sql in self.list_of_statements:
+            self.snowflake.execute_query(raw_sql)
+
     def get_statements(self) -> object:
         """Gets dictionary of unique Statement objects & associated methods.
 
@@ -144,13 +174,30 @@ class Script(Statement):
             statement.run()
             statement.execute()
         """
+        self.reload_source()
+        self.statements = Script(self.source).statements
         for k, v in self.statements.items():
             self.returned[k] = Statement(v, self.snowflake)
 
         return self.returned
 
-    def run(self) -> None:
-        """Executes entire script a statement at a time."
+    def fetch(self, header) -> object:
+        """Fetches a single statement object out of the script.
+
+        Most convenient method to execute individual statements - use
+        get_statements() method if wanting to iterate over multiple
+        statement objects and access the same methods
+
+        Args:
+            header: Header/label of the statement to fetch
+
+        Returns:
+            Statement object on which the following methods can be called:
+
+        .. code-block:: python
+
+            statement.render()
+            statement.run()
+            statement.execute()
         """
-        for raw_sql in self.list_of_statements:
-            self.snowflake.execute_query(raw_sql)
+        return self.get_statements().get(header)
