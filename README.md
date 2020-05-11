@@ -159,11 +159,12 @@ used to transform a few simple sql statements and execute them against a sample 
 
 
 ---
-## Working Example
+## `Snowmobile.scriptparser` Example Usage
 
-The following Python snippet creates a dummy DataFrame and loads it to the warehouse for use during the exercise.
 
-*Setup / creating dummy data*
+### Setup / creating data
+
+The following Python snippet creates a dummy DataFrame and loads it to the warehouse for use during the exercise
 
 ```python
 # Up-front setup for snowscripter usage
@@ -183,7 +184,7 @@ snowloader.df_to_snowflake(df, table_name='SAMPLE_TABLE', force_recreate=True, s
 ```
 
 
-#### Local .sql file
+### 1. Local sql script (snowscripter_sample.sql)
 
 Now that we have a sample table to query against, consider two statements stored in the .sql file
 below.
@@ -224,7 +225,7 @@ group by 1
 having count(*) <> 1;
 ```
 
-#### Instantiating parsed script object
+### 2. Instantiating parsed script object
 
 In Python, we can instantiate a `scriptparser.Script` object from this file with:
 ```python
@@ -235,20 +236,19 @@ script = snowscripter.Script(path_to_script, snowflake=demo_conn)
 ```
 
 
-#### Accessing & executing statements
+### 3. Accessing & executing statements
 
-Now instantiated, we can work with different parts of our script either through the `script` 
-object or extracting individual `Statement` objects & their associated methods.
-
-A few different examples of this are as follows
+Now that we have a `script` object in memory, we can work with different parts of our script
+either through the `script` object or extracting individual `Statement` objects & their associated methods.
 
 **Note**: It's technically possible to access each statement as a raw string by pulling it out of
-the `script` object's namespace with something like 
+the `script` object's namespace with:
+ 
 ```python
 script.statement.get('contrived_example_aggregation')
 ```
-but this isn't recommended as manually executing all those strings is significantly less convenient
-than the following two options.
+However, this isn't recommended as manually executing all those strings is significantly less convenient
+than the following two options outlined below.
 
 ---
 **Option 1**: Access as a `Statement` object via the script's `.fetch()` method
@@ -258,31 +258,50 @@ than the following two options.
    type(sample_statement_obj)  # snowmobile.snowscripter.Statement
    ```
    This method is preferred because the `snowmobile.snowscripter.Statement` object comes with the following three methods:
-   - `.execute()` which executes the statement
-   - `.render()` which renders the syntactic-code as a markdown in IPython environments 
-   - `.raw()` which renders the raw sql as a string similarly to Option 1 above
+   - `.execute()` to execute
+   - `.render()` to render the syntactically-highlighted code as a markdown in IPython environments 
+   - `.raw()` to return the raw sql as a string
+<br></br>
+<br></br>
 
 **Option 2**: Access `Statement` objects for all statements via the script's `.get_statements()` method
 
    ```python
    iterable_statements = script.get_statements()
    for statement_header, statement in iterable_statements.items():
-      # statement_header will iterative through [contrived_example_aggregation, verify_contrived_join]
-      # statement will be Statement objects from associated sql with access to .execute(), .render(), .raw()
+      # 'statement_header' will iterate through [contrived_example_aggregation, verify_contrived_join]
+      # 'statement' will be the Statement objects associated with each of the headers
    ```
 This will return an iterable containing individual `Statement` objects for all statements in the script
 
 ---
 
+### 4. Executing and rendering statements simultaneously
 
+Lastly, it's often helpful to execute a statement as well as render the sql behind it
+or see descriptions of results, particularly when troubleshooting a broken pipeline or
+trying to determine at what point in a lengthy sql script the data stops representing what 
+we think it does. 
 
-#### Executing and rendering statements simultaneously
+To avoid the need to call multiple methods in these instances, the `.execute()` method 
+is defined with the following arguments allowing for this flexibility.
+```python
+    def execute(self, results: bool = True, render: bool = False,
+                describe: bool = False) -> object:
+        """Executes sql with option to return results / render sql as Markdown.
 
-Lastly, it's often helpful to execute a statement as well as render the sql behind it.
-
-To avoid having multiple method calls in these instances, the `.execute()` method comes with arguments for executing without returning results, rendering the underlying sql, and printing out a description of the returned results if desired.
-
-Below is a screenshot of what this looks like from within a notebook.
+        Args:
+            results: Boolean indicating whether or not to
+            return results
+            render: Boolean indicating whether or not to render the
+            raw sql as markdown
+            describe: Boolean indicating whether or not to
+            print output of a pandas df.describe() on returned results (mostly
+            useful for QA queries that are expected to return null-sets)
+        """
+```
+<br></br>
+This yields the following functionality in IPython environments:
 
 <img src="Usage/snowscripter/SAMPLE_execute_render_describe.PNG" alt="Example: execute w/ render and description"  />
 
