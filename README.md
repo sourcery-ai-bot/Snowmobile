@@ -6,7 +6,7 @@
 
 `snowmobile` is a simple set of modules for streamlined interaction with the Snowflake Database for Data Scientists and Business Analysts.
 
-As such the included codes are intended to be used for the execution of raw SQL or with native DataFrames and don't make use of an ORM to 
+As such the included codes are intended to be used for the execution of raw SQL or with [pandas](https://pandas.pydata.org/) DataFrames and don't make use of an ORM to 
 map Python objects to tabular Snowflake counterparts. 
 
 A quick overview of simplified usage is outlined below.
@@ -39,7 +39,7 @@ as desired and store anywhere on local file system
       }
     }
     ```
-   
+  
 3. Import desired modules and execute a statement to test connection
     ```python
     # bundled authentication & statement-execution module  
@@ -56,13 +56,13 @@ as desired and store anywhere on local file system
 
 ## Overview
 
-All modules are included in the build for transparency & flexibility purposes, although the majority of use cases will run on the front-end modules that make use of the others along the way.
+All modules are included in the build for transparency & flexibility purposes, although the majority of use-cases will run on the front-end modules that make use of the others along the way.
 
 #### Front-end / primary utilities 
 - `snowquery` instantiates a connection and provides an `execute_query()` method for executing statements against and querying data from the warehouse
 - `snowloader` flexibly loads data from a local DataFrame into a table within the warehouse in the form of a `df_to_snowflake()` function, bundling a variety of utilities that standardize column names pre-loading, check DataFrame's structure compared to the table to be loaded into, and executes 
 DDL in absence of a pre-existing table 
-- `snowscripter` parses and instantiates components of raw .sql scripts into Python objects for much easier interaction, particularly particularly as it relates to single-statement execution and rendering statements as markdown when executed in IPython environments as well as easy execution of full .sql files
+- `snowscripter` parses and instantiates components of raw .sql scripts into Python objects for much easier interaction, particularly as it relates to single-statement execution and rendering statements as markdown when executed in IPython environments as well as easy execution of full .sql files
 
 
 #### Back-end / supporting
@@ -143,7 +143,7 @@ This will return a Script object on which the `.run()` method can be called to e
 ## Usage (statement-level)
 
 #### Background
-The real benefit of `snowscripter` comes from the use of 'header' tags within the sql script that form a link between a specified name and an individual statement - these identified in the parser by the regex pattern contained in the `pattern` argument of the object's instantiation.
+The real benefit of `snowscripter` comes from the use of 'header' tags within the sql script that form a link between a specified name and an individual statement - these are identified in the parser by the regex pattern contained in the `pattern` argument of the object's instantiation.
 
 The pattern's default is '**/\\\*-(\\w.*)-\\\*/**'  and will return all text between a standard sql block-comment whose contents are wrapped in an additional '-', such as:
 
@@ -154,9 +154,12 @@ select
 from...
 ```
 
-To make this more clear, below is a walk-through usage illustration in which a sample table is created and then `scriptparser` is used to parse a few sql statements and execute them against the table.
+To make this more clear, a usage example is outlined in the below in which `scriptparser` is
+used to transform several simple sql statements and execute them against a sample table loaded in the warehouse.
 
-### Working Example
+
+---
+## Working Example
 
 The following Python snippet creates a dummy DataFrame and loads it to the warehouse for use during the exercise.
 
