@@ -300,7 +300,7 @@ is defined with the following arguments allowing for this flexibility.
             useful for QA queries that are expected to return null-sets)
         """
 ```
-<br></br>
+
 Resulting in the following functionality within **IPython/Jupyter** environments
 
 <img style="align-content: center;"
@@ -308,7 +308,6 @@ Resulting in the following functionality within **IPython/Jupyter** environments
      alt="Example: execute w/ render and description">
 </img>
 
-<br></br>
 #### End `Snowmobile.scriptparser` Example Usage
 
 ---
