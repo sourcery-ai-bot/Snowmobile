@@ -133,17 +133,18 @@ class Script(Statement):
         self.pattern = re.compile(pattern)
         with open(self.source, 'r') as f:
             self.script_txt = f.read()
-        self.list_of_statements = sqlparse.split(self.script_txt)
         self.statement_names = \
             [self.pattern.findall(self.statement) for
-             self.statement in self.list_of_statements]
-
+             self.statement in sqlparse.split(self.script_txt)]
         self.statements = {
             k[0].lower():
                 sqlparse.format(v, strip_comments=True).lstrip().rstrip()
             for k, v in zip(self.statement_names, self.list_of_statements)
             if k != []
         }
+        self.list_of_statements = \
+            [sqlparse.format(val, strip_comments=True).strip()
+             for val in sqlparse.split(self.script_txt)]
 
         self.spans = {val: i for i, val in enumerate(self.statements.keys())}
         self.ordered_statements = [val for val in self.statements.values()]
@@ -161,7 +162,7 @@ class Script(Statement):
 
         return self
 
-    def run(self) -> None:
+    def run(self, verbose=True) -> None:
         """Executes entire script a statement at a time."
         """
         self.reload_source()
@@ -169,8 +170,15 @@ class Script(Statement):
         if not self.snowflake:
             self.snowflake = snowquery.Connector()
 
-        for raw_sql in self.list_of_statements:
-            self.snowflake.execute_query(raw_sql)
+        for statement_name, statement_sql in self.statements.items():
+
+            if statement_sql:
+                self.snowflake.execute_query(statement_sql)
+
+                if verbose:
+                    print(f"<finished executing: {statement_name}")
+
+        return None
 
     def get_statements(self) -> object:
         """Gets dictionary of unique Statement objects & associated methods.
