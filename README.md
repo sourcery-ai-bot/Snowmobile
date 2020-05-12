@@ -256,7 +256,6 @@ This method is preferred because the `snowmobile.snowscripter.Statement` object 
 - `.execute()` to execute
 - `.render()` to render the syntactically-highlighted code as a markdown in IPython environments 
 - `.raw()` to return the raw sql as a string
-<br></br>
 
 **Option 2**: Access `Statement` objects for all statements via the script's `.get_statements()` method
 
