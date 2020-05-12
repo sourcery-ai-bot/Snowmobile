@@ -122,6 +122,7 @@ class Credentials:
         try:
             with open(self.path_to_config) as c:
                 all_creds = json.load(c)
+                all_creds = {k.lower: v for k, v in all_creds.items()}
 
         except IOError as e:
             print(e)
@@ -133,6 +134,7 @@ class Credentials:
             print(f"\t<2 of 2> Successfully imported credentials for "
                   f"'{self.conn_name}'")
             return creds
+
 
         except IOError as e:
             print(
