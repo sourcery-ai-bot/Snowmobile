@@ -250,7 +250,7 @@ having count(*) <> 1;
 
 ### 2. Instantiating parsed script object
 
-In Python, we can instantiate a `scriptparser.Script` object from this file with:
+In Python, we can instantiate a `snowscripter.Script` object from this file with:
 ```python
 from snowmobile import snowscripter
   
@@ -286,13 +286,14 @@ This method is preferred because the `snowmobile.snowscripter.Statement` object 
 
 **Option 2**: Access `Statement` objects for all statements via the script's `.get_statements()` method
 
+This will return an iterable containing individual `Statement` objects for all statements in the script
+
 ```python
 iterable_statements = script.get_statements()
 for statement_header, statement in iterable_statements.items():
   # 'statement_header' will iterate through [contrived_example_aggregation, verify_contrived_join]
   # 'statement' will be the Statement objects associated with each of the headers
 ```
-This will return an iterable containing individual `Statement` objects for all statements in the script
 
 ---
 
