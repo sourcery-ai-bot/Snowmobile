@@ -40,7 +40,7 @@ as desired and store anywhere on local file system
     }
    ```
   
-3. Import desired modules and execute simplified commands
+3. Import module for the use-case and execute simplified commands
     ```python
     # <bundled authentication & statement-execution>  
     from snowmobile import snowquery
