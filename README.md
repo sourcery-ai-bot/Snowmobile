@@ -38,11 +38,11 @@ as desired and store anywhere on local file system
         "schema": "SANDBOX"
       }
     }
-    ```
+   ```
   
-3. Import desired modules and execute a statement to test connection
+3. Import desired modules and execute simplified commands
     ```python
-    # Bundled authentication & statement-execution  
+    # <bundled authentication & statement-execution>  
     from snowmobile import snowquery
       
     # Instantiate an instance of a connection
@@ -57,12 +57,27 @@ as desired and store anywhere on local file system
     # Instantiate a different connection
     user_conn = snowquery.Connector(conn_name='user_schema')
    
-    # Flexible loading solution
+    # <flexible loading solution>
     from snowmobile import snowloader
     
     # Load to different location
     snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
                                snowflake=user_conn, force_recreate=True)
+   
+    # Locate a bunch of sql files to execute
+    import os
+    paths_to_sql = [os.path.join(file, path) for file in os.listdir(path)]
+    
+    # <script parsing and execution>
+    from snowmobile import snowscripter 
+    
+    # Creating connected script objects from paths on a specified connection
+    script_objs = [snowscripter.Script(path, snowflake=user_conn) for path in paths_to_sql]
+    
+    # Run all scripts sequentially
+    for script in script_objs:
+       print(f"Running {script.source}")
+       script.run()
     ```
 
 # Modules
