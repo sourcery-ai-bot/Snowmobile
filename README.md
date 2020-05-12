@@ -42,14 +42,27 @@ as desired and store anywhere on local file system
   
 3. Import desired modules and execute a statement to test connection
     ```python
-    # bundled authentication & statement-execution module  
+    # Bundled authentication & statement-execution  
     from snowmobile import snowquery
       
     # Instantiate an instance of a connection
-    sf = snowquery.Connector(conn_name='SANDBOX')
+    sb = snowquery.Connector(conn_name='SANDBOX')
       
     # Execute statements on that connection 
-    sample_table = sf.execute_query('SELECT * FROM SAMPLE_TABLE')
+    sample_df = sb.execute_query('SELECT * FROM SAMPLE_TABLE')
+    
+    # Manipulate DataFrame
+    transposed_df = sample_df.transpose() 
+   
+    # Instantiate a different connection
+    user_conn = snowquery.Connector(conn_name='user_schema')
+   
+    # Flexible loading solution
+    from snowmobile import snowloader
+    
+    # Load to different location
+    snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
+                               snowflake=user_conn, force_recreate=True)
     ```
 
 # Modules
