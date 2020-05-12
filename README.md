@@ -1,6 +1,6 @@
 [![PyPI version](https://badge.fury.io/py/snowmobile.svg)](https://badge.fury.io/py/snowmobile)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/GEM7318/Snowmobile/blob/master/LICENSE.txt)
-[![Documentation Status](https://readthedocs.org/projects/snowmobile/badge/?version=latest)](https://snowmobile.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/snowmobile/badge/?version=latest)](https://snowmobile.readthedocs.io/en/latest/?badge=latest#)
 
 # snowmobile
 
@@ -54,7 +54,6 @@ as desired and store anywhere on local file system
 
 # Modules
 
-## Overview
 
 All modules are included in the build for transparency & flexibility purposes, although the majority of use-cases will run on the front-end modules that make use of the others along the way.
 
@@ -74,7 +73,6 @@ A more in-depth description of of each module and its usage outlined below.
 ---
 # snowquery
 
-### Description
 `snowquery` simplifies the execution of sql statements against the database via an `execute_query()` 
 method, using [pandas'](https://pandas.pydata.org/) `pd.read_sql` function to execute the SQL and  returning results from the DataBase as a [dataframe](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html) by default.
 
@@ -105,8 +103,6 @@ pandas.core.frame.DataFrame
 
 ---
 # snowscripter
-
-## Description
 
 `snowscripter` imports an external .sql file & transforms it into Python objects on which methods can be called to perform a variety of actions.
 
@@ -243,7 +239,6 @@ either through the `script` object or extracting individual `Statement` objects 
 
 **Note**: It's technically possible to access each statement as a raw string by pulling it out of
 the `script` object's namespace with:
- 
 ```python
 script.statement.get('contrived_example_aggregation')
 ```
@@ -253,31 +248,29 @@ than the following two options outlined below.
 ---
 **Option 1**: Access as a `Statement` object via the script's `.fetch()` method
 
-   ```python
-   sample_statement_obj = script.fetch('contrived_example_aggregation')
-   type(sample_statement_obj)  # snowmobile.snowscripter.Statement
-   ```
-   This method is preferred because the `snowmobile.snowscripter.Statement` object comes with the following three methods:
-   - `.execute()` to execute
-   - `.render()` to render the syntactically-highlighted code as a markdown in IPython environments 
-   - `.raw()` to return the raw sql as a string
-<br></br>
+```python
+sample_statement_obj = script.fetch('contrived_example_aggregation')
+type(sample_statement_obj)  # snowmobile.snowscripter.Statement
+```
+This method is preferred because the `snowmobile.snowscripter.Statement` object comes with the following three methods:
+- `.execute()` to execute
+- `.render()` to render the syntactically-highlighted code as a markdown in IPython environments 
+- `.raw()` to return the raw sql as a string
 <br></br>
 
 **Option 2**: Access `Statement` objects for all statements via the script's `.get_statements()` method
 
-   ```python
-   iterable_statements = script.get_statements()
-   for statement_header, statement in iterable_statements.items():
-      # 'statement_header' will iterate through [contrived_example_aggregation, verify_contrived_join]
-      # 'statement' will be the Statement objects associated with each of the headers
-   ```
+```python
+iterable_statements = script.get_statements()
+for statement_header, statement in iterable_statements.items():
+  # 'statement_header' will iterate through [contrived_example_aggregation, verify_contrived_join]
+  # 'statement' will be the Statement objects associated with each of the headers
+```
 This will return an iterable containing individual `Statement` objects for all statements in the script
 
 ---
 
 ### 4. Executing and rendering statements simultaneously
-
 Lastly, it's often helpful to execute a statement as well as render the sql behind it
 or see descriptions of results, particularly when troubleshooting a broken pipeline or
 trying to determine at what point in a lengthy sql script the data stops representing what 
@@ -322,20 +315,27 @@ Its main features are:
 - Returns a boolean indicating whether or not a load was successful for exception-handling when iteratively loading/appending multiple files
 into a single table.
 
-Continuing on the example above, the below will convert all columns in the _sample_table_ DataFrame to floats and re-load it into the warehouse,
-executing new-DDL to create the table with float data types and loading all data back into the table.
+## Usage
+
+Continuing on the above example, the below will convert all columns in the _sample_table_ DataFrame to floats 
+and load it into the warehouse, executing new-DDL to overwrite an existing table or create one in its absence.
 
 ```python
 import numpy as np
 import pandas as pd
 from snowmobile import snowloader, snowquery
 
-# Creating dummy df 
-df = pd.DataFrame({f"col{i}": 
-                   np.random.normal(0, 1, 1000) for i in range(0, 10)}).reset_index()
-
 # Instantiating instance of a specified connection to run on for demo 
 demo_conn = snowquery.Connector('demo')
+
+# Selecting all value from dummy table created in 'snowscripter' usage
+df = demo_conn.execute_query('select * from sample_table')
+
+# Converting all numeric values to floats (index dropping/adding to handle
+# the index along the way/not change the structure of the final table)
+df = df.drop(columns=[col for col in df.columns if 'index' in 
+                      col]).reset_index()
+df = df.applymap(float).reset_index()
 
 # Option 1 
 snowloader.df_to_snowflake(df=df, table_name='SAMPLE_TABLE', force_recreate=True,
