@@ -135,7 +135,6 @@ class Credentials:
                   f"'{self.conn_name}'")
             return creds
 
-
         except IOError as e:
             print(
                 f"\t<2 of 2>Could not parse conn_name='{self.conn_name}' "
