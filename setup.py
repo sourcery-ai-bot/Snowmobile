@@ -9,9 +9,10 @@ HERE = pathlib.Path(__file__).parent
 # The text of the README file
 README = (HERE / "README.md").read_text()
 
+
 version_str = \
-    str((subprocess.check_output(['git', 'describe']).strip())). \
-    split('-')[0].replace("'", '')
+    str((subprocess.check_output(['git', 'describe']).strip())).\
+    split('-')[0].replace("'", '').replace('b', '')
 
 # This call to setup() does all the work
 setup(

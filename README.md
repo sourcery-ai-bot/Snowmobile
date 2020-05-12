@@ -19,7 +19,7 @@ A quick overview of simplified usage is outlined below.
 as desired and store anywhere on local file system
     ```json
     {
-        "Connection1": {
+   "Connection1": {
         "username":	"",
         "password":	"",
         "role": "",
@@ -27,8 +27,7 @@ as desired and store anywhere on local file system
         "warehouse": "warehouse #1",
         "database":	"database #1",
         "schema": "schema #1"
-      },
-        "SANDBOX": {
+      },"SANDBOX": {
         "username":	"",
         "password":	"",
         "role": "",

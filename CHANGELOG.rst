@@ -23,4 +23,6 @@
     - Quick patch of HTML tag causing explosion in the docs
 * Version 0.1.4
     - Switching dynamic tags to include beta indicator
+* Version 0.1.5
+    - Docs addition only
 
