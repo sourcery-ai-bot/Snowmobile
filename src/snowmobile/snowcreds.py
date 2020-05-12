@@ -56,8 +56,7 @@ class Credentials:
         return self.path_to_config
 
     def get_creds_path(self) -> str:
-        """Checks for cache existence and validates - traverses OS if not.
-        """
+        """Checks for cache existence and validates - traverses OS if not."""
         print("Locating credentials...")
 
         print("\t<1 of 2> Checking for cached path...")
