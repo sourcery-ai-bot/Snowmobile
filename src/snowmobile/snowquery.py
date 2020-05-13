@@ -29,12 +29,12 @@ class Connector(snowconn.Connection):
             results: Boolean value indicating whether or not to return results
         Returns:
             Results from query in a Pandas DataFrame by default or None if
-            ``return_results=False`` is passed when function is called.
+            ``results=False`` is passed when function is called.
         """
         self.query = query
         self.from_file = from_file
         self.filepath = filepath
-        self.results = results
+        self.return_results = results
 
         if self.from_file and self.filepath:
 
@@ -42,7 +42,7 @@ class Connector(snowconn.Connection):
                 self.query = open(self.filepath).read()
 
             except sf.errors.ProgrammingError as e:
-                print("There was an error reading the file.")
+                print(f"There was an error reading the file.\n{e}")
                 self.query = None
 
         if self.query:
@@ -54,12 +54,9 @@ class Connector(snowconn.Connection):
                 print(e)  # default error message
                 print(f'Error {e.errno} ({e.sqlstate}): {e.msg} ('
                       f'{e.sfqid})')  # custom error message
-                self.results = None
+                self.results = pd.DataFrame()
 
-        else:
-            self.results = None
-
-        if self.results:
+        if self.return_results:
             return self.results
 
         else:

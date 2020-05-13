@@ -2,33 +2,8 @@ import os
 import json
 from fcache.cache import FileCache
 
-
-# def get_conn(all_creds: dict, conn_name: str, config_file: str):
-#     """Finds default connection in config file."
-#
-#     Args:
-#         all_creds: Dictionary of all credentials
-#         conn_name: Name of connection (if passed)
-#         config_file: Name of config file (for console output only)
-#
-#     Returns:
-#         Name of the set of credentials to be parsed out of the
-#         credentials file
-#
-#     """
-#     print("\nImporting credentials...")
-#     if not conn_name:
-#         conn_name = next(iter(all_creds.keys()))
-#         print(f"\t<1 of 2> No explicit connection passed, fetching "
-#               f"'{conn_name}' credentials by default")
-#
-#     else:
-#         print(f"\t<1 of 2> Fetching user-specific 'conn_name={conn_name}' "
-#               f"from {config_file}")
-#
-#     return conn_name
-
 cache = FileCache('snowmobile', flag='cs')
+
 
 class Credentials:
 
