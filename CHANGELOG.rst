@@ -43,3 +43,6 @@
 * Version 0.1.10
     - ``snowquery``
         - Cleaning up `return results` logic to not return an ambiguous DataFrame
+* Version 0.1.11
+    - ``snowscripter``
+        - Adding additional logic to strip comments from object such that script.run() only runs on executable sql

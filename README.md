@@ -177,12 +177,12 @@ select
 from...
 ```
 
-To make this more clear, a usage example is outlined in the below in which `scriptparser` is
+To make this more clear, a usage example is outlined in the below in which `snowscripter` is
 used to transform a few simple sql statements and execute them against a sample table loaded in the warehouse.
 
 
 ---
-## `Snowmobile.scriptparser` Example Usage
+## `Snowmobile.snowscripter` Example Usage
 
 
 ### Setup / creating data
@@ -328,7 +328,7 @@ Resulting in the following functionality within **IPython/Jupyter** environments
      alt="Example: execute w/ render and description">
 </img>
 
-#### End `Snowmobile.scriptparser` Example Usage
+#### End `Snowmobile.snowscripter` Example Usage
 
 ---
 # snowloader
