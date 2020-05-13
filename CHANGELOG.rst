@@ -34,3 +34,5 @@
     - ``snowcreds``
         - Adding in a caching layer to first check a cache when looking for the path to
           the credentials and only traversing a file system if it comes up with nothing
+* Version 0.1.7
+    - Only change is fixing dependency issue with fcache
