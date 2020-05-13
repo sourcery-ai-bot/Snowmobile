@@ -8,10 +8,10 @@ import os
 
 class Statement:
 
-    def __init__(self, sql, snowflake: snowquery.Connector = ''):
+    def __init__(self, sql, connector: snowquery.Connector = ''):
 
         self.sql = sql
-        self.snowflake = snowflake
+        self.connector = connector
 
     def render(self) -> object:
         """Renders SQL as markdown when called in IPython environment.
@@ -45,7 +45,7 @@ class Statement:
             print output of a pandas df.describe() on returned results (mostly
             useful for QA queries that are expected to return null-sets)
         """
-        self.returned = self.snowflake.execute_query(self.sql)
+        self.returned = self.connector.execute_query(self.sql)
 
         if render:
             self.render()
@@ -78,7 +78,7 @@ class Script(Statement):
     """
 
     def __init__(self, path: str, pattern: str = r"/\*-(\w.*)-\*/",
-                 snowflake: snowquery.Connector = ''):
+                 connector: snowquery.Connector = ''):
         """Instantiating an instance of 'script' by calling Script class
         on a path to a SQL script.
 
@@ -93,7 +93,7 @@ class Script(Statement):
         Args:
             path: Full path to SQL script including .sql extension
             pattern: Regex pattern that SQL statement headers are wrapped in
-            snowflake: Instantiated snowquery.Connector instance to use in
+            connector: Instantiated snowquery.Connector instance to use in
             the execution of Script or Statement objects
 
         Instantiated Attributes:
@@ -128,7 +128,7 @@ class Script(Statement):
         super().__init__(self)
         self.pattern = pattern
         self.source = path
-        self.snowflake = snowflake
+        self.connector = connector
         self.name = os.path.split(self.source)[-1].split('.sql')[0]
         self.pattern = re.compile(pattern)
         with open(self.source, 'r') as f:
@@ -167,13 +167,13 @@ class Script(Statement):
         """
         self.reload_source()
 
-        if not self.snowflake:
-            self.snowflake = snowquery.Connector()
+        if not self.connector:
+            self.connector = snowquery.Connector()
 
         for statement_name, statement_sql in self.statements.items():
 
             if statement_sql:
-                self.snowflake.execute_query(statement_sql)
+                self.connector.execute_query(statement_sql)
 
                 if verbose:
                     print(f"<finished executing: {statement_name}")
@@ -195,7 +195,7 @@ class Script(Statement):
         self.reload_source()
         self.statements = Script(self.source).statements
         for k, v in self.statements.items():
-            self.returned[k] = Statement(v, self.snowflake)
+            self.returned[k] = Statement(v, self.connector)
 
         return self.returned
 

@@ -15,7 +15,8 @@ class Connector(snowconn.Connection):
                                         conn_name=self.conn_name).get_conn()
 
     def execute_query(self, query: str, from_file: bool = False,
-                      filepath='', return_results=True) -> pd.DataFrame:
+                      filepath: str = '', results: bool = True) -> \
+            pd.DataFrame:
         """Run commands in Snowflake.
 
         Args:
@@ -25,6 +26,7 @@ class Connector(snowconn.Connection):
             filepath: Full file path to .sql script if looking to execute a
             single-statement script on the fly, most useful for executing
             extracted DDL as part of a cleanup.
+            results: Boolean value indicating whether or not to return results
         Returns:
             Results from query in a Pandas DataFrame by default or None if
             ``return_results=False`` is passed when function is called.
@@ -32,7 +34,7 @@ class Connector(snowconn.Connection):
         self.query = query
         self.from_file = from_file
         self.filepath = filepath
-        self.return_results = return_results
+        self.results = results
 
         if self.from_file and self.filepath:
 
@@ -57,7 +59,7 @@ class Connector(snowconn.Connection):
         else:
             self.results = None
 
-        if self.return_results:
+        if self.results:
             return self.results
 
         else:

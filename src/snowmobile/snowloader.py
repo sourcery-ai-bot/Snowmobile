@@ -256,7 +256,7 @@ def remove_local(file_path: str, keep_local: bool = False) -> None:
 
 
 def df_to_snowflake(df: pd.DataFrame, table_name: str,
-                    snowflake: snowquery.Connector = '', conn_name: str = '',
+                    connector: snowquery.Connector = '', conn_name: str = '',
                     force_recreate: bool = False, keep_local: bool = False,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
@@ -292,7 +292,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
     Args:
         df: DataFrame to load to Snowflake
         table_name: Table name to load the data into
-        snowflake: Pre-instantiated snowquery.Connector() instance with
+        connector: Pre-instantiated snowquery.Connector() instance with
             which to execute the load to Snowflake
         conn_name: Name of connection to load to Snowflake if non-default
             connection is desired or nothing is passed in the 'snowflake' param
@@ -309,10 +309,10 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
     """
 
-    if not snowflake:
-        snowflake = snowquery.Connector(conn_name=conn_name)
+    if not connector:
+        connector = snowquery.Connector(conn_name=conn_name)
 
-    continue_load = verify_load(snowflake=snowflake, df=df,
+    continue_load = verify_load(snowflake=connector, df=df,
                                 table_name=table_name,
                                 force_recreate=force_recreate)
 
@@ -349,7 +349,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         for i, statement in enumerate(statements, start=1):
 
             try:
-                result = snowflake.execute_query(statement)
+                result = connector.execute_query(statement)
 
                 print(
                     f"\n<{i} of {len(statements)} completed>:\n\t"
