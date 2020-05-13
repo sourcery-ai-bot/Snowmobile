@@ -25,9 +25,12 @@
     - Switching dynamic tags to include beta indicator
 * Version 0.1.5
     - Docs addition only
-* Version 0.1.5
+* Version 0.1.6
     - ``snowscripter``
         - Adding logic to strip comments from sql statements stored in the 'list_of_statements' attribute
           as trailing comments were causing errors in some instances of ``script.run()``
         - Adding 'verbose' argument to ``script.run()`` to print out a confirmation of each statement as it
           finishes executing
+    - ``snowcreds``
+        - Adding in a caching layer to first check a cache when looking for the path to
+          the credentials and only traversing a file system if it comes up with nothing

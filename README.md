@@ -45,10 +45,10 @@ as desired and store anywhere on local file system
     from snowmobile import snowquery
       
     # Instantiate an instance of a connection
-    sb = snowquery.Connector(conn_name='SANDBOX')
+    sandbox_conn = snowquery.Connector(conn_name='SANDBOX')
       
     # Execute statements on that connection 
-    sample_df = sb.execute_query('SELECT * FROM SAMPLE_TABLE')
+    sample_df = sandbox_conn.execute_query('SELECT * FROM SAMPLE_TABLE')
     
     # Manipulate DataFrame
     transposed_df = sample_df.transpose() 
@@ -61,7 +61,7 @@ as desired and store anywhere on local file system
     
     # Load to different location
     snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
-                               snowflake=user_conn, force_recreate=True)
+                               connector=user_conn, force_recreate=True)
    
     # Locate a bunch of sql files to execute
     import os
@@ -71,7 +71,7 @@ as desired and store anywhere on local file system
     from snowmobile import snowscripter 
     
     # Creating connected script objects from paths on a specified connection
-    script_objs = [snowscripter.Script(path, snowflake=user_conn) for path in paths_to_sql]
+    script_objs = [snowscripter.Script(path, connector=user_conn) for path in paths_to_sql]
     
     # Run all scripts sequentially
     for script in script_objs:
@@ -137,14 +137,14 @@ The `Script` object is instantiated with the following three arguments, of which
 
 ```python
     def __init__(self, path: str, pattern: str = r"/\*-(\w.*)-\*/",
-                 snowflake: snowquery.Connector = ''):
+                 connector: snowquery.Connector = ''):
         """Instantiating an instance of 'script' by calling Script class on a
         full path to a sql script.
 
         Args:
             path: Full path to SQL script including .sql extension
             pattern: Regex pattern that SQL statement headers are wrapped in
-            snowflake: Instantiated snowquery.Connector instance to use in the
+            connector: Instantiated snowquery.Connector instance to use in the
             execution of Script or Statement objects
         """ 
 ```
@@ -203,7 +203,7 @@ df = pd.DataFrame({f"col{i}":
 demo_conn = snowquery.Connector('demo')
 
 # Loading into a table called SAMPLE_TABLE
-snowloader.df_to_snowflake(df, table_name='SAMPLE_TABLE', force_recreate=True, snowflake=demo_conn)
+snowloader.df_to_snowflake(df, table_name='SAMPLE_TABLE', force_recreate=True, connector=demo_conn)
 ```
 
 
