@@ -2,7 +2,9 @@
 
 import snowflake.connector
 from snowmobile import snowcreds as creds
+from fcache.cache import FileCache
 
+cache = FileCache('snowmobile', flag='cs')
 
 class Connection(creds.Credentials):
     """Instantiate with inherited attributes from snowcreds.
@@ -16,11 +18,12 @@ class Connection(creds.Credentials):
 
     """
     def __init__(self, config_file: str = 'snowflake_credentials.json',
-                 conn_name: str = ''):
+                 conn_name: str = '', cache=cache):
         super().__init__()
 
         self.config_file = config_file
         self.conn_name = conn_name
+        self.cache = cache
 
     def get_conn(self) -> snowflake.connector:
         """Uses credentials to authenticate for statement execution.
@@ -31,7 +34,8 @@ class Connection(creds.Credentials):
         """
 
         self.credentials = creds.Credentials(config_file=self.config_file,
-                                             conn_name=self.conn_name).get()
+                                             conn_name=self.conn_name,
+                                             cache=self.cache).get()
         self.conn = snowflake.connector.connect(
             user=self.credentials["username"],
             password=self.credentials["password"],

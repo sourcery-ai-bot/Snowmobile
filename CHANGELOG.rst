@@ -36,3 +36,7 @@
           the credentials and only traversing a file system if it comes up with nothing
 * Version 0.1.7
     - Only change is fixing dependency issue with fcache
+* Version 0.1.8
+    - Changing version of fcache to match that of conda-forge
+* Version 0.1.9
+    - Fixing issue with caching syncing up across classes

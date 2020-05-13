@@ -1,13 +1,39 @@
-
 import os
 import json
 from fcache.cache import FileCache
 
 
+# def get_conn(all_creds: dict, conn_name: str, config_file: str):
+#     """Finds default connection in config file."
+#
+#     Args:
+#         all_creds: Dictionary of all credentials
+#         conn_name: Name of connection (if passed)
+#         config_file: Name of config file (for console output only)
+#
+#     Returns:
+#         Name of the set of credentials to be parsed out of the
+#         credentials file
+#
+#     """
+#     print("\nImporting credentials...")
+#     if not conn_name:
+#         conn_name = next(iter(all_creds.keys()))
+#         print(f"\t<1 of 2> No explicit connection passed, fetching "
+#               f"'{conn_name}' credentials by default")
+#
+#     else:
+#         print(f"\t<1 of 2> Fetching user-specific 'conn_name={conn_name}' "
+#               f"from {config_file}")
+#
+#     return conn_name
+
+cache = FileCache('snowmobile', flag='cs')
+
 class Credentials:
 
     def __init__(self, config_file: str = 'snowflake_credentials.json',
-                 conn_name: str = '') -> None:
+                 conn_name: str = '', cache=cache) -> None:
         """Instantiates instances of the needed params to locate creds file.
 
         Args:
@@ -17,9 +43,9 @@ class Credentials:
             use first set of credentials in the file if no argument is passed.
 
         """
-        self.cache = FileCache('snowmobile', flag='cs')
+        self.cache = cache
         self.config_file = config_file
-        self.conn_name = conn_name
+        self.conn_name = conn_name.lower()
         self.path_to_config = self.cache.get(r'path_to_config')
 
     def clear_cache(self) -> object:
@@ -83,32 +109,6 @@ class Credentials:
 
         return self.path_to_config
 
-    @staticmethod
-    def get_conn(all_creds: dict, conn_name: str, config_file: str):
-        """Finds default connection in config file."
-
-        Args:
-            all_creds: Dictionary of all credentials
-            conn_name: Name of connection (if passed)
-            config_file: Name of config file (for console output only)
-
-        Returns:
-            Name of the set of credentials to be parsed out of the
-            credentials file
-
-        """
-        print("\nImporting credentials...")
-        if not conn_name:
-            conn_name = next(iter(all_creds.keys()))
-            print(f"\t<1 of 2> No explicit connection passed, fetching "
-                  f"'{conn_name}' credentials by default")
-
-        else:
-            print(f"\t<1 of 2> Fetching user-specific 'conn_name={conn_name}' "
-                  f"from {config_file}")
-
-        return conn_name
-
     def get(self) -> dict:
         """Locates creds file and parses out the specified set of credentials.
 
@@ -121,26 +121,45 @@ class Credentials:
 
         try:
             with open(self.path_to_config) as c:
-                all_creds = json.load(c)
-                all_creds = {k.lower: v for k, v in all_creds.items()}
+                temp = json.load(c)
+                # print(temp)
+                # self.all_creds = temp
+                self.all_creds = \
+                    {k.lower(): v for k, v in temp.items()}
 
         except IOError as e:
             print(e)
 
-        try:
-            self.conn_name = self.get_conn(all_creds, self.conn_name,
-                                           self.config_file)
-            creds = all_creds.get(self.conn_name.lower())
+        print("\nImporting credentials...")
+        if not self.conn_name:
+            self.conn_name = next(iter(self.all_creds.keys()))
+            print(f"\t<1 of 2> No explicit connection passed, fetching "
+                  f"'{self.conn_name}' credentials by default")
+
+        else:
+            print(f"\t<1 of 2> Fetching user-specific 'conn_name="
+                  f"'{self.conn_name}' from {self.config_file}")
+            self.conn_name = self.conn_name
+
+
+        # try:
+        # self.conn_name = get_conn(self.all_creds, self.conn_name,
+        #                           self.config_file)
+        self.creds = self.all_creds[self.conn_name]
+
+        if self.creds and self.conn_name:
             print(f"\t<2 of 2> Successfully imported credentials for "
                   f"'{self.conn_name}'")
-            return creds
 
-        except IOError as e:
+
+        # except IOError as e:
+        else:
             print(
-                f"\t<2 of 2>Could not parse conn_name='{self.conn_name}' "
-                f"from {self.config_file}\nPlease either "
-                f"\n\t\t- Specify a different configuration file or "
-                f"connection name"
+                f"\t<2 of 2> Could not parse conn_name='{self.conn_name}' "
+                f"from {self.config_file}\n\nPlease either \n\t\t- Specify "
+                f"a different configuration file or connection name "
                 f"\n\t\t- Verify the contents of the configuration file"
                 f"\n\t\t- Run snowmobile.snowcreds.cache.clear()")
-            print(e)
+            # print(e)
+
+        return self.creds
