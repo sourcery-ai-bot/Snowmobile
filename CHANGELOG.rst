@@ -40,3 +40,6 @@
     - Changing version of fcache to match that of conda-forge
 * Version 0.1.9
     - Fixing issue with caching syncing up across classes
+* Version 0.1.10
+    - ``snowquery``
+        - Cleaning up `return results` logic to not return an ambiguous DataFrame
