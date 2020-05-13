@@ -136,16 +136,16 @@ class Script(Statement):
         self.statement_names = \
             [self.pattern.findall(self.statement) for
              self.statement in sqlparse.split(self.script_txt)]
-        self.statements = {
-            k[0].lower():
-                sqlparse.format(v, strip_comments=True).lstrip().rstrip()
-            for k, v in zip(self.statement_names, self.list_of_statements)
-            if k != []
-        }
         self.list_of_statements = \
             [sqlparse.format(val, strip_comments=True).strip()
              for val in sqlparse.split(self.script_txt)]
-
+        self.stripped_statements \
+            = [sqlparse.format(val, strip_comments=True).strip()
+               for val in self.list_of_statements]
+        self.statements = {
+            k[0].lower(): v for k, v in zip(self.statement_names,
+            self.stripped_statements) if k != [] and isinstance(v, str)
+        }
         self.spans = {val: i for i, val in enumerate(self.statements.keys())}
         self.ordered_statements = [val for val in self.statements.values()]
         self.header_statements = [f"/*-{head.upper()}-*/\n{sql}"
