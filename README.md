@@ -13,76 +13,92 @@ A quick overview of simplified usage is outlined below.
 
 ---
 ## Basic usage
-1. Install with `pip install snowmobile`
+#### 1. Installation
+`pip install snowmobile`
 
-2. Create file called *snowflake_credentials.json* following the below structure with as many sets of credentials
-as desired and store anywhere on local file system
-    ```json
-    {
-   "Connection1": {
-        "username":	"",
-        "password":	"",
-        "role": "",
-        "account": "",
-        "warehouse": "warehouse #1",
-        "database":	"database #1",
-        "schema": "schema #1"
-      },"SANDBOX": {
-        "username":	"",
-        "password":	"",
-        "role": "",
-        "account": "",
-        "warehouse": "warehouse #1",
-        "database":	"database #1",
-        "schema": "SANDBOX"
-      }
-    }
-   ```
+#### 2. Store credentials
+
+Store *snowflake_credentials.json* following the below structure anywhere on the local file system
+with as many sets of credentials as needed 
+```json
+{
+"Connection1": {
+    "username":	"",
+    "password":	"",
+    "role": "",
+    "account": "",
+    "warehouse": "warehouse #1",
+    "database":	"database #1",
+    "schema": "schema #1"
+  },
+"SANDBOX": {
+    "username":	"",
+    "password":	"",
+    "role": "",
+    "account": "",
+    "warehouse": "warehouse #1",
+    "database":	"database #1",
+    "schema": "SANDBOX"
+  }
+}
+```
+
+The first time a connection is instantiated, `snowcreds` will find the file and cache its location for future reference.
   
-3. Import module for the use-case and execute simplified commands
-    ```python
-    # <bundled authentication & statement-execution>  
-    from snowmobile import snowquery
-      
-    # Instantiate an instance of a connection
-    sandbox_conn = snowquery.Connector(conn_name='SANDBOX')
-      
-    # Execute statements on that connection 
-    sample_df = sandbox_conn.execute_query('SELECT * FROM SAMPLE_TABLE')
-    
-    # Manipulate DataFrame
-    transposed_df = sample_df.transpose() 
-   
-    # Instantiate a different connection
-    user_conn = snowquery.Connector(conn_name='user_schema')
-   
-    # <flexible loading solution>
-    from snowmobile import snowloader
-    
-    # Load to different location
-    snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
-                               connector=user_conn, force_recreate=True)
-   
-    # Locate a bunch of sql files to execute
-    import os
-    paths_to_sql = [os.path.join(file, path) for file in os.listdir(path)]
-    
-    # <script parsing and execution>
-    from snowmobile import snowscripter 
-    
-    # Creating connected script objects from paths on a specified connection
-    script_objs = [snowscripter.Script(path, connector=user_conn) for path in paths_to_sql]
-    
-    # Run all scripts sequentially
-    for script in script_objs:
-       print(f"Running {script.source}")
-       script.run()
-    ```
+#### 3. Import module for use-case and execute simplified commands
+
+##### `snowquery` 
+
+```python
+# Bundled authentication & statement-execution module  
+from snowmobile import snowquery
+  
+# Instantiate an instance of a connection
+sandbox_conn = snowquery.Connector(conn_name='SANDBOX')
+  
+# Execute statements on that connection 
+sample_df = sandbox_conn.execute_query('select * from sample_table')
+```
+<br>
+
+##### `snowloader`    
+```python
+# Flexible data loading solution
+from snowmobile import snowloader
+
+# Manipulate local DataFrame
+transposed_df = sample_df.transpose() 
+
+# Instantiate a different connection for load destination
+user_conn = snowquery.Connector(conn_name='user_schema')
+
+# Load into table
+snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
+                           connector=user_conn, force_recreate=True)
+```
+<br>
+
+##### `snowscripter`
+```
+# Script parser for script & statement-level execution/IPython rendering
+from snowmobile import snowscripter
+
+# Locate a bunch of sql files to execute
+import os
+paths_to_sql = [os.path.join(file, path) for file in os.listdir(path)]
+
+# Instantiate script objects for a given connection
+script_objs = [snowscripter.Script(path, connector=user_conn) for path in paths_to_sql]
+
+# Run all scripts sequentially
+for script in script_objs:
+   script.run()
+```
 
 # Modules
 
 
-All modules are included in the build for transparency & flexibility purposes, although the majority of use-cases will run on the front-end modules that make use of the others along the way.
+All the below sub-modules are included in the build, although the majority of use-cases will run on the front-end modules that make use of the others along the way.
 
 #### Front-end / primary utilities 
 - `snowquery` instantiates a connection and provides an `execute_query()` method for executing statements against and querying data from the warehouse
