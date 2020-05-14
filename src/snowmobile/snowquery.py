@@ -14,36 +14,19 @@ class Connector(snowconn.Connection):
         self.conn = snowconn.Connection(config_file=self.config_file,
                                         conn_name=self.conn_name).get_conn()
 
-    def execute_query(self, query: str, from_file: bool = False,
-                      filepath: str = '', results: bool = True) -> \
+    def execute_query(self, query: str, results: bool = True) -> \
             pd.DataFrame:
-        """Run commands in Snowflake.
+        """Execute commands & query data from the warehouse.
 
         Args:
             query: Raw SQL to execute.
-            from_file: Boolean value indicating whether or not to read the
-            query from a local file.
-            filepath: Full file path to .sql script if looking to execute a
-            single-statement script on the fly, most useful for executing
-            extracted DDL as part of a cleanup.
             results: Boolean value indicating whether or not to return results
         Returns:
             Results from query in a Pandas DataFrame by default or None if
             ``results=False`` is passed when function is called.
         """
         self.query = query
-        self.from_file = from_file
-        self.filepath = filepath
         self.return_results = results
-
-        if self.from_file and self.filepath:
-
-            try:
-                self.query = open(self.filepath).read()
-
-            except sf.errors.ProgrammingError as e:
-                print(f"There was an error reading the file.\n{e}")
-                self.query = None
 
         if self.query:
 
@@ -51,9 +34,12 @@ class Connector(snowconn.Connection):
                 self.results = pd.read_sql(query, self.conn)
 
             except sf.errors.ProgrammingError as e:
+
                 print(e)  # default error message
+
                 print(f'Error {e.errno} ({e.sqlstate}): {e.msg} ('
                       f'{e.sfqid})')  # custom error message
+
                 self.results = pd.DataFrame()
 
         if self.return_results:
@@ -71,3 +57,25 @@ class Connector(snowconn.Connection):
         """
         self.conn.close()
         return None
+
+    def commit(self) -> None:
+        """Manually commits changes to database in instances when needed.
+
+        Returns:
+            None
+        """
+        self.conn.commit()
+
+        return None
+
+    def new(self) -> object:
+        """Instantiates a new session for the same object.
+
+        Returns:
+            A snowquery.Connector() under the same set of credentials as the
+            originally instantiated object but connected to a new session.
+        """
+        self.conn = snowconn.Connection(config_file=self.config_file,
+                                        conn_name=self.conn_name).get_conn()
+
+        return self
