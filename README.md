@@ -59,7 +59,6 @@ sandbox_conn = snowquery.Connector(conn_name='SANDBOX')
 # Execute statements on that connection 
 sample_df = sandbox_conn.execute_query('select * from sample_table')
 ```
-<br>
 
 ##### `snowloader`    
 ```python
@@ -76,10 +75,9 @@ user_conn = snowquery.Connector(conn_name='user_schema')
 snowloader.df_to_snowflake(df=transposed_df, table_name='LATEST_SAMPLE', 
                            connector=user_conn, force_recreate=True)
 ```
-<br>
 
 ##### `snowscripter`
-```
+```python
 # Script parser for script & statement-level execution/IPython rendering
 from snowmobile import snowscripter
 
@@ -95,7 +93,7 @@ for script in script_objs:
    script.run()
 ```
 
-# Modules
+# Module Overview
 
 
 All the below sub-modules are included in the build, although the majority of use-cases will run on the front-end modules that make use of the others along the way.
