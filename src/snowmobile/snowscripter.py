@@ -128,8 +128,9 @@ class Script(Statement):
         super().__init__(self)
         self.pattern = pattern
         self.source = path
+        self.script_name = os.path.split(self.source)[-1]
         self.connector = connector
-        self.name = os.path.split(self.source)[-1].split('.sql')[0]
+        # self.name = os.path.split(self.source)[-1].split('.sql')[0]
         self.pattern = re.compile(pattern)
         with open(self.source, 'r') as f:
             self.script_txt = f.read()
@@ -219,3 +220,22 @@ class Script(Statement):
             statement.execute()
         """
         return self.get_statements().get(header)
+
+    def get_type(self, pattern: str = r'\[(.*)\]'):
+        """Gets type of script 'Automation' or 'Rebuild' based on convention.
+
+        Args:
+            pattern: Pattern to identify script description, for example the
+            name of 'Sample Script' should be 'Sample Script [
+            Automation].sql' if it's an automation script
+
+        Returns:
+            Type of script (automation or rebuild)
+
+        """
+        type_brackets = self.script_name.split('.')[0].split(' ')[-1]
+
+        if re.findall(pattern, type_brackets):
+            return re.findall(pattern, type_brackets)[0].title()
+        else:
+            return ''
