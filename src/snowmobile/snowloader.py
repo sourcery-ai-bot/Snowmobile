@@ -6,6 +6,7 @@ import os
 import itertools
 import csv
 import datetime
+import re
 
 
 def standardize_col(col: str) -> str:
@@ -164,8 +165,8 @@ def validate_table(df: pd.DataFrame, table_name: str,
     return outcome
 
 
-def verify_load(snowflake: snowquery.Connector,
-                df: pd.DataFrame, table_name: str, force_recreate: bool =
+def verify_load(df: pd.DataFrame, snowflake: snowquery.Connector,
+                table_name: str, force_recreate: bool =
                 False) -> bool:
     """Performs pre-loading operations and comparisons to table in-warehouse.
 
@@ -176,6 +177,7 @@ def verify_load(snowflake: snowquery.Connector,
 
     Args:
         df: pd.DataFrame to push to Snowflake
+        snowflake: snowquery.
         table_name: String representation of table name to load the df into
         force_recreate: Boolean value to indicating whether or not to
         force-recreation of table
@@ -256,7 +258,7 @@ def remove_local(file_path: str, keep_local: bool = False) -> None:
 
 
 def df_to_snowflake(df: pd.DataFrame, table_name: str,
-                    connector: snowquery.Connector = '', conn_name: str = '',
+                    connector: snowquery.Connector = '',
                     force_recreate: bool = False, keep_local: bool = False,
                     output_location: str = os.getcwd(),
                     on_error: str = 'continue',
@@ -294,8 +296,6 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
         table_name: Table name to load the data into
         connector: Pre-instantiated snowquery.Connector() instance with
             which to execute the load to Snowflake
-        conn_name: Name of connection to load to Snowflake if non-default
-            connection is desired or nothing is passed in the 'snowflake' param
         force_recreate: Boolean value indicating whether or not to recreate
             the table irrelevant of matching structure between local and DB
         keep_local: Boolean value indicating whether or not to keep the
@@ -310,13 +310,16 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
     """
 
     if not connector:
-        connector = snowquery.Connector(conn_name=conn_name)
+        connector = snowquery.Connector()
 
     continue_load = verify_load(snowflake=connector, df=df,
                                 table_name=table_name,
                                 force_recreate=force_recreate)
 
     if continue_load:
+
+        # Committing changes to make sure table creation has gone through
+        connector.commit()
 
         # File name for local copy
         file_name = f"{table_name}.csv"
@@ -334,6 +337,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
         # Escaped path for put statement
         put_path = file_path.replace('\\', '\\\\')
+        # put_path = re.escape(file_path)
 
         put_file = f"put 'file://{put_path}' @{table_name}_stage " \
                    f"auto_compress=true overwrite=true;"
@@ -350,6 +354,7 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
             try:
                 result = connector.execute_query(statement)
+                connector.commit()
 
                 print(
                     f"\n<{i} of {len(statements)} completed>:\n\t"
@@ -363,17 +368,25 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
                     print(f"\t{response}")
 
             except:
-                print(f"<statement failed>\n{statement}\n\n")
+                print(f"\n<statement {i} of 4 failed>\n{statement}\n\n")
+                connector.execute_query(statements[-1])
                 break
 
         remove_local(file_path, keep_local)  # Defaults to delete local file
 
     else:
+        i = 1
         pass
 
     if list(df.columns)[-1:] == ['LOADED_TMSTMP']:
         df.drop(columns=list(df.columns)[-1:], axis=1, inplace=True)
     else:
         pass
+
+    if continue_load and i == 4:
+        continue_load = True
+
+    else:
+        continue_load = False
 
     return continue_load
