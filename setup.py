@@ -34,7 +34,7 @@ setup(
     packages=find_packages(exclude=("tests",)),
     include_package_data=True,
     install_requires=['pandas', 'snowflake-connector-python', 'sqlparse',
-                      'fcache'],
+                      'fcache', 'ipython'],
     entry_points={
         "console_scripts": [
             "snowmobile=snowmobile.__main__:main",
