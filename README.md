@@ -277,15 +277,6 @@ script = snowscripter.Script(path_to_script, snowflake=demo_conn)
 
 Now that we have a `script` object in memory, we can work with different parts of our script
 either through the `script` object or extracting individual `Statement` objects & their associated methods.
-
-**Note**: It's technically possible to access each statement as a raw string by pulling it out of
-the `script` object's namespace with:
-```python
-script.statement.get('contrived_example_aggregation')
-```
-However, this isn't recommended as manually executing all those strings is significantly less convenient
-than the following two options outlined below.
-
 ---
 **Option 1**: Access as a `Statement` object via the script's `.fetch()` method
 
@@ -310,6 +301,14 @@ for statement_header, statement in iterable_statements.items():
 ```
 
 ---
+
+**Note**: It's technically possible to access each statement as a raw string by pulling it out of
+the `script` object's namespace with:
+```python
+script.statement.get('contrived_example_aggregation')
+```
+However, this isn't recommended as manually executing all those strings is significantly less convenient
+than the following two options outlined below.
 
 ### 4. Executing and rendering statements simultaneously
 Lastly, it's often helpful to execute a statement as well as render the sql behind it
