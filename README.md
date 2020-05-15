@@ -275,8 +275,12 @@ script = snowscripter.Script(path_to_script, snowflake=demo_conn)
 
 ### 3. Accessing & executing statements
 
+
 Now that we have a `script` object in memory, we can work with different parts of our script
 either through the `script` object or extracting individual `Statement` objects & their associated methods.
+
+
+
 ---
 **Option 1**: Access as a `Statement` object via the script's `.fetch()` method
 
