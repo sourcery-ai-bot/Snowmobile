@@ -312,7 +312,7 @@ the `script` object's namespace with:
 script.statement.get('contrived_example_aggregation')
 ```
 However, this isn't recommended as manually executing all those strings is significantly less convenient
-than the following two options outlined below.
+than the following two options outlined above.
 
 ### 4. Executing and rendering statements simultaneously
 Lastly, it's often helpful to execute a statement as well as render the sql behind it
