@@ -8,7 +8,7 @@ import os
 
 class Statement:
 
-    def __init__(self, sql, connector: snowquery.Connector = ''):
+    def __init__(self, sql: str, connector: snowquery.Connector = ''):
 
         self.sql = sql
         self.connector = connector
@@ -75,58 +75,48 @@ class Script(Statement):
             *
         from sample_other
 
+    Instantiate an instance of 'script' by calling Script class
+    on a path to a SQL script.
+
+    Structured this way so that each method within the class
+    re-instantiates a new instance of 'script' (i.e. re-imports the raw
+    file from local).
+
+    This keeps users from having to alter or re-import anything on the
+    Python side while editing & saving changes to the SQL file as well as
+    ensures that all methods are using the latest version of the script.
+
+    Args:
+        path (str): Full path to SQL script including .sql extension
+        pattern (str): Regex pattern that SQL statement headers are wrapped in
+        connector (snowquery.Connector): Instantiated snowquery.Connector
+        instance to use in the execution of Script or Statement objects
+
+    Instantiated Attributes:
+        script_txt (str): Raw SQL script read in as text file
+        list_of_statements: (list) list of all SQL statements in SQL script
+        (both with and without headers)
+        statement_names (list): List of statement headers - including blank
+        entries for statements that do not have headers (these instances
+        have entries equal to '[]').
+        statement (dict): Dictionary containing {'header': 'associated_sql'}.
+        Note the conditionals within the comprehensions that throw out
+        entries from both lists that do not have a valid statement_header
+        spans (dict): Dictionary containing {'header':
+        'index_position_in_script'} and is used in the get_span() method
+        ordered_statements (list): List of statements in the order in which
+        they appear in the script. Note that these are only statements that
+        have a valid headers in the SQL file
+        header_statements (str): List of all statements with their headers
+        prepended to them, same length as ordered_statements
+        full_sql (str): String containing all statements with valid headers
+        combined into a single string.
+
     """
 
     def __init__(self, path: str, pattern: str = r"/\*-(\w.*)-\*/",
                  connector: snowquery.Connector = ''):
-        """Instantiating an instance of 'script' by calling Script class
-        on a path to a SQL script.
-
-        Structured this way so that each method within the class
-        re-instantiates a new instance of 'script' (i.e. re-imports the raw
-        file from local).
-
-        This keeps users from having to alter or re-import anything on the
-        Python side while editing & saving changes to the SQL file as well as
-        ensures that all methods are using the latest version of the script.
-
-        Args:
-            path: Full path to SQL script including .sql extension
-            pattern: Regex pattern that SQL statement headers are wrapped in
-            connector: Instantiated snowquery.Connector instance to use in
-            the execution of Script or Statement objects
-
-        Instantiated Attributes:
-            script_txt:
-                (str) raw SQL script read in as text file
-            list_of_statements:
-                (list) list of all SQL statements in SQL script (both with and
-                without headers)
-            statement_names:
-                (list) List of statement headers - including blank entries for
-                statements that do not have headers (these instances have
-                entries equal to '[]')
-            statement:
-                (dict) Dictionary containing {'header': 'associated_sql'} - note
-                the conditionals within the comprehensions that throw out entries
-                from both lists that do not have a valid statement_header
-            spans:
-                (dict) Dictionary containing {'header': 'index_position_in_script'}
-                and is used in the get_span() method
-            ordered_statements:
-                (list) List of statements in the order in which they appear in the
-                script. Note that these are only statements that have a valid
-                headers in the SQL file
-            header_statements:
-                (str) List of all statements with their headers prepended to them,
-                same length as ordered_statements
-            full_sql:
-                (str) String containing all statements with valid headers combined
-                into a single string.
-
-        """
         super().__init__(self)
-        self.pattern = pattern
         self.source = path
         self.script_name = os.path.split(self.source)[-1]
         self.connector = connector
@@ -171,13 +161,14 @@ class Script(Statement):
         if not self.connector:
             self.connector = snowquery.Connector()
 
-        for statement_name, statement_sql in self.statements.items():
+        for i, statement in enumerate(self.stripped_statements):
 
-            if statement_sql:
-                self.connector.execute_query(statement_sql)
+            if statement:
+                self.connector.execute_query(statement, results=False)
 
                 if verbose:
-                    print(f"<finished executing: {statement_name}")
+                    print(f"<finished executing {i} of "
+                          f"{len(self.stripped_statements)}>")
 
         return None
 
