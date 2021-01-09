@@ -35,12 +35,12 @@ def standardize_col(col: str) -> str:
     new_chars = []  # 3
 
     for k, v in itertools.groupby(col):
-        v_list = list(v)
-
         if k in string.punctuation or k in string.whitespace:
             new_chars.append(k)
 
         else:
+            v_list = list(v)
+
             new_chars.append(''.join(v_list))
 
     col = ''.join(new_chars)
@@ -76,10 +76,8 @@ def get_ddl(df: pd.DataFrame, table_name: str) -> str:
         (for force-recreation of a table or loading into a table that
         doesn't previously exist)
     """
-    final_ddl = \
-        pd.io.sql.get_schema(df, table_name).replace('CREATE TABLE',
+    return pd.io.sql.get_schema(df, table_name).replace('CREATE TABLE',
                                                      'CREATE OR REPLACE TABLE')
-    return final_ddl
 
 
 def check_information_schema(table_name: str,
@@ -121,18 +119,15 @@ def compare_fields(df_cols: list, table_cols: list) -> int:
         Count of matches between the table and the DataFrame's columns and
         will return a zero if the table does not exist at all
     """
-    matched_list = []
-    for i, (df_col, tbl_col) in enumerate(zip(df_cols, table_cols), start=1):
+    matched_list = [
+        i
+        for i, (df_col, tbl_col) in enumerate(
+            zip(df_cols, table_cols), start=1
+        )
+        if df_col == tbl_col
+    ]
 
-        if df_col == tbl_col:
-            matched_list.append(i)
-
-        else:
-            pass
-
-    matched_cnt = len(matched_list)
-
-    return matched_cnt
+    return len(matched_list)
 
 
 def validate_table(df: pd.DataFrame, table_name: str,
@@ -202,37 +197,31 @@ def verify_load(df: pd.DataFrame, snowflake: snowquery.Connector,
         continue_load = True
         snowflake.execute_query(table_ddl)
 
-    elif table_exists and fields_match and not force_recreate:
+    elif fields_match and not force_recreate:
         print(
             f"\tTable: {table_name} already exists w/ matching field names\n"
             f"\t- continuing load and will append data to table\n")
         continue_load = True
 
-    elif table_exists and fields_match and force_recreate:
+    elif fields_match:
         print(
             f"\tTable: {table_name} Already exists w/ matching field names "
             f"- Recreated by user w/ force_recreate=True\n")
         continue_load = True
         snowflake.execute_query(table_ddl)
 
-    elif table_exists and not fields_match and not force_recreate:
+    elif not force_recreate:
         print(
             f"\tColumns in {table_name} don't match those in local DataFrame"
             f"\n\t- Use `force_recreate=True` to overwrite existing table\n")
         continue_load = False
 
-    elif table_exists and not fields_match and force_recreate:
+    else:
         print(
             f"\tTable: {table_name} columns don't match those in local "
             f"DataFrame \n- Force-recreated by user\n")
         continue_load = True
         snowflake.execute_query(table_ddl)
-
-    else:
-        print(
-            f"\tUnknown error occured w/ load of {table_name} to Snowflake "
-            f"\n\t- please check snowmobile.snowloader source codes")
-        continue_load = False
 
     return continue_load
 
@@ -247,7 +236,7 @@ def remove_local(file_path: str, keep_local: bool = False) -> None:
     Returns:
         None
     """
-    if keep_local is False:
+    if not keep_local:
         os.remove(file_path)
         print(f"\n<Local copy of file deleted from {file_path}>")
 
@@ -376,13 +365,8 @@ def df_to_snowflake(df: pd.DataFrame, table_name: str,
 
     else:
         i = 1
-        pass
-
     if list(df.columns)[-1:] == ['LOADED_TMSTMP']:
         df.drop(columns=list(df.columns)[-1:], axis=1, inplace=True)
-    else:
-        pass
-
     if continue_load and i == 4:
         continue_load = True
 
